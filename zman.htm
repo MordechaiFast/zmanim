@@ -1,0 +1,458 @@
+﻿<html>
+<head>
+
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
+
+   <title>Zmanim</title>
+<script SRC="datepicker.js">
+</script>
+<script SRC="zman.js">
+</script>
+<script SRC="astrocalc.js">
+</script>
+<script SRC="hebrew.js">
+</script>
+<script SRC="torahReading.js">
+</script>
+
+
+<script language="JavaScript"><!--
+	function currentData() {
+		getLocation(document.myform1.location.options[document.myform1.location.selectedIndex].value)
+		//var dat=new Date();
+
+
+		//var tz = dat.getTimezoneOffset();
+		//if (tz>=1320) tz=(tz-1440)/60;
+		//else tz=tz/60;
+		//tz=-tz;
+		//if (tz>=0) tz="+"+tz;
+		//document.myform1.timezone.value=tz;
+
+
+
+
+
+
+	}
+
+
+	function setUserInput(){
+		document.myform1.location.options[0].selected=true;
+	}
+-->
+</script>
+
+<STYLE TYPE="text/css">
+TR{
+font-size: 12px;
+font-family:verdana , arial, helvetica, sans-serif;
+color: black;
+}
+.regular {
+font-family:Times New Roman, verdana , arial, helvetica, sans-serif;
+color: black;
+}
+
+SPAN{
+font-size: 15px;
+font-family:David,Times New Roman,  serif;
+color: black;
+}
+
+
+P{
+font-size: big;
+font-family:verdana , arial, helvetica, sans-serif;
+color: red;
+font-weight:bold
+}
+
+
+.smallOne
+{
+font-size: 10px;
+font-family:verdana , arial, helvetica, sans-serif;
+color: black;
+}
+
+.btn {cursor:hand;font-family:david,times new roman,serif;font-weight:normal;font-size:100%;color:#000000;background-color:#FFFFEE}
+.btn1 {cursor:hand;font-family:david,times new roman,serif;font-weight:normal;font-size:19px;color:#000000}
+
+.ctr {cursor:hand;font-family:arial,times new roman,serif;font-weight:normal;font-size:12px;color:#000000}
+
+</STYLE>
+
+
+</head>
+<body bgcolor="#EFEFCE" background="parchmnt.jpg" onload="initTorahReadings();setDate();currentData();checkDST();calculate();calculate();">
+
+<center><form name="whichweek" onSubmit="0"><input type="HIDDEN" name="weekdate" size=12 ></form>
+<p>Temporal
+Hour</center>
+
+<center><table WIDTH="100%" >
+<tr>
+<td>
+<center><form NAME=myform>
+
+<select NAME="month" onChange="ud(this);checkDST();document.whichweek.weekdate.value = showdate();calculate();calculate();">
+	<option VALUE="1">January&nbsp;<option VALUE="2">February&nbsp;<option VALUE="3">March&nbsp;<option VALUE="4">April&nbsp;<option VALUE="5">May&nbsp;<option VALUE="6">June&nbsp;<option VALUE="7">July&nbsp;<option VALUE="8">August&nbsp;<option VALUE="9">September&nbsp;<option VALUE="10">October&nbsp;<option VALUE="11">November&nbsp;<option VALUE="12">December&nbsp;
+</select>
+
+&nbsp;
+<select NAME="day" onChange="document.whichweek.weekdate.value = showdate();checkDST();calculate();calculate();">
+
+<script>
+			  for(var i=1;i<=31;i++) {
+			   document.write("<OPTION VALUE="+i+">"+i);
+			  }
+			 </script>
+</select>&nbsp;
+
+<input TYPE=BUTTON NAME=putcalbutton VALUE="&nbsp;?&nbsp;"  onclick="putcal(this.form.month.options[this.form.month.selectedIndex].value,this.form.year.options[this.form.year.selectedIndex].value);">
+&nbsp;
+<select NAME="year" onChange="ud(this.form.month);checkDST();document.whichweek.weekdate.value = showdate();calculate();calculate();"><script>
+			  for(var i=0;i<30;i++) {
+			   document.write("<OPTION VALUE="+gy(i)+">"+gy(i));
+			  }
+			 </script>
+</select>
+&nbsp;
+<input onclick='table(2)' type=button value="Month" name=printMonth>
+
+<INPUT type="checkbox" checked name="jewish" value=1 >Jewish
+</form>
+
+</center>
+</td>
+<FORM name=hebrew >
+<TD align=middle dir =rtl>
+	<SELECT class="ctr" dir =rtl name=month  onChange="calcHMonth();calcHebrew();document.whichweek.weekdate.value = showdate();checkDST();calculate();" >
+		<option VALUE="" Selected >Zmanim for a whole year
+	</SELECT>
+
+	<select DIR="RTL" NAME="day" onChange="calcHebrew();document.whichweek.weekdate.value = showdate();checkDST();calculate();">
+		<script>
+		  for(var i=1;i<31;i++) {
+		   document.write("<OPTION VALUE="+i+">"+i);
+		  }
+		 </script>
+	</select>
+
+	<select DIR="RTL" NAME=year onChange="calcHMonth();calcHebrew();document.whichweek.weekdate.value = showdate();checkDST();calculate();">
+		<script>
+			var j = 5754;
+
+		  for(var i=1;i<50;i++) {
+					j = 5754 + i;
+		  		   document.write("<OPTION VALUE="+j+">"+j);
+		  }
+		 </script>
+	</select>
+
+
+                  <BR><INPUT class=ctr readOnly size=27 name=leap DIR="RTL">
+                  <INPUT class=ctr readOnly size=27 name=holidays DIR="RTL"></form> </TD>
+</tr>
+</table></center>
+
+<center><table BORDER CELLPADDING=3 WIDTH="100%" >
+<tr>
+<td>
+<form ACTION="" METHOD=POST name=myform1>Location:
+<select  class=ctr name="location" onchange="getLocation(document.myform1.location.options[document.myform1.location.selectedIndex].value);checkDST();calculate();" >
+
+<option value="0.00/0.00/0/0/18/1*User Input">	User Input</option>
+<option value='31.76667/-35.23333/2/0/40/0* ירושלים'> ירושלים</option>
+<option value='52.38/-4.89/1/0/18/1*Amsterdam'>Amsterdam</option>
+<option value='61.22/149/-9/0/18/1*Anchorage AK'>Anchorage AK</option>
+
+<option value='40.13/-33/2/0/18/1*Ankara'>Ankara</option>
+<option value='51.21666667/-4.416666667/1/0/18/1*Antwerpen Belgium'>Antwerpen Belgium</option>
+<option value='37.97/-23.72/1/0/18/1*Athens'>Athens</option>
+<option value='33.75/84.39/-5/0/18/1*Atlanta GA'>Atlanta GA</option>
+<option value='-36.85448/-174.760727/12/37/18/2*Auckland'>Auckland</option>
+<option value='39.29/76.61/-5/0/18/1*Baltimore MD'>Baltimore MD</option>
+<option value='13.2/-100.5/7/0/18/1*Bangkok'>Bangkok</option>
+<option value='31.25/-34.7833333333333/2/0/18/0*Be'er Sheva'>Be'er Sheva</option>
+<option value='39.91/-116.47/8/0/18/1*Beijing'>Beijing</option>
+
+<option value='44.83/-20.46/2/0/18/1*Belgrade'>Belgrade</option>
+<option value='52.5166666666667/-13.4/2/0/18/1*Berlin Germany'>Berlin Germany</option>
+<option value='31.75/-34.98/2/0/18/0*Bet Shemesh'>Bet Shemesh</option>
+<option value='33.52/86.81/-6/0/18/1*Birmingham AL'>Birmingham AL</option>
+<option value='52.4796/1.9030/0/0/18/1*Birmingham England'>Birmingham England</option>
+<option value='46.81/100.78/-6/0/18/1*Bismarck ND'>Bismarck ND</option>
+<option value='40.630729/73.98381/-5/0/18/1*Borough Park'>Borough Park</option>
+<option value='42.35/71.05/-5/0/18/1*Boston MA'>Boston MA</option>
+<option value='41.17/73.2/-5/0/18/1*Bridgeport CT'>Bridgeport CT</option>
+<option value='51.85/-4.35/1/0/18/1*Brussels Belgium'>Brussels Belgium</option>
+
+<option value='44.5/-26.1/2/0/18/1*Bucharest'>Bucharest</option>
+<option value='47.49/-19.06/1/0/18/1*Budapest'>Budapest</option>
+<option value='-34.6/58.45/-3/0/18/1*Buenos Aires'>Buenos Aires</option>
+<option value='30/-31.28333333/2/0/18/1*Cairo Egypt'>Cairo Egypt</option>
+<option value='-33.94/-18.49/2/0/18/1*Cape Town'>Cape Town</option>
+<option value='10.5/66.93/-4/0/18/1*Caracas'>Caracas</option>
+<option value='41.8666666666667/86.3666666666667/-6/0/18/1*Chicago IL'>Chicago IL</option>
+<option value='-43.521578/-172.633737/12/4/18/2*Christchurch'>Christchurch</option>
+<option value='41.5/81.7/-5/0/18/1*Cleveland OH'>Cleveland OH</option>
+<option value='43.21/71.54/-5/0/18/1*Concord NH'>Concord NH</option>
+
+<option value='55.71666667/-12.45/1/0/18/1*Copenhagen Denmark'>Copenhagen Denmark</option>
+<option value='32.78/96.8/-6/0/18/1*Dallas TX'>Dallas TX</option>
+<option value='39.73333333/104.9833333/-7/0/18/1*Denver CO'>Denver CO</option>
+<option value='41.6/93.61/-6/0/18/1*Des Moines IA'>Des Moines IA</option>
+<option value='42.33/83.05/-5/0/18/1*Detroit MI'>Detroit MI</option>
+<option value='53.39/6.34/0/0/18/1*Dublin'>Dublin</option>
+<option value='32.524504/-91.013699/0/0/18/0*Eagle Lake'>Eagle Lake</option>
+<option value='55.95/3.1/0/0/18/1*Edinburgh'>Edinburgh</option>
+<option value='29.55/-34.9333333333333/2/0/18/0*Eilat'>Eilat</option>
+
+<option value='44.05/123.09/-8/0/18/1*Eugene OR'>Eugene OR</option>
+<option value='40.605163/73.744076/-5/0/18/1*Far Rockaway'>Far Rockaway</option>
+<option value='40.613713/73.965219/-5/0/18/1*Flatbush'>Flatbush</option>
+<option value='37.91/85.97/-5/0/18/1*Fort Knox KY'>Fort Knox KY</option>
+<option value='26.12/80.14/-5/0/18/1*Fort Lauderdale FL'>Fort Lauderdale FL</option>
+<option value='46.2/-6.15/1/0/18/1*Geneva'>Geneva</option>
+<option value='44.52/88.02/-6/0/18/1*Green Bay WI'>Green Bay WI</option>
+<option value='32.8166666666667/-34.9833333333333/2/0/18/0*Haifa'>Haifa</option>
+<option value='31.6/-35.8833333333333/2/0/18/0*Hebron'>Hebron</option>
+
+<option value='46.59/112.04/-7/0/18/1*Helena MT'>Helena MT</option>
+<option value='60.16/-24.96/2/0/18/1*Helsinki'>Helsinki</option>
+<option value='22.16666667/-114.3/8/0/18/1*Hong Kong China'>Hong Kong China</option>
+<option value='21.3061/157.86/-10/0/18/1*Honolulu HI'>Honolulu HI</option>
+<option value='39.77/86.16/-5/0/18/1*Indianapolis IN'>Indianapolis IN</option>
+<option value='43.61/110.73/-6/0/18/1*Jackson WY'>Jackson WY</option>
+<option value='-6.17/-106.8/7/0/18/1*Jakarta'>Jakarta</option>
+<option value='31.8666666666667/-35.45/2/0/18/0*Jericho'>Jericho</option>
+<option value='40.599235/74.135838/-5/0/18/1*Kaplan House'>Kaplan House</option>
+
+<option value='32.1666666666667/-35.1/2/0/18/0*Karnei Shomron'>Karnei Shomron</option>
+<option value='51.32/-9.5/1/0/18/1*Kassel'>Kassel</option>
+<option value='50.45/-30.3/2/0/18/1*Kiev'>Kiev</option>
+<option value='34.67/-135.1755/9/0/18/1*Kobe Japan'>Kobe Japan</option>
+<option value='35/-135.8/9/0/18/1*Kyoto Japan'>Kyoto Japan</option>
+<option value='-12.05/77.05/-5/0/18/1*Lima'>Lima</option>
+<option value='38.71/9.19/-1/0/18/1*Lisbon'>Lisbon</option>
+<option value='51.5/-0.116667/0/0/18/1*London England'>London England</option>
+<option value='34.05/118.2333333/-8/0/18/1*Los Angeles CA'>Los Angeles CA</option>
+
+<option value='49.6/-6.2/1/0/18/1*Luxembourg'>Luxembourg</option>
+<option value='40.41/3.69/1/0/18/1*Madrid'>Madrid</option>
+<option value='50/-8.27/1/0/18/1*Mainz'>Mainz</option>
+<option value='-37.86666667/-145.1333333/10/0/18/1*Melbourne Australia'>Melbourne Australia</option>
+<option value='35.15/90.05/-6/0/18/1*Memphis TN'>Memphis TN</option>
+<option value='44.98/93.26/-6/0/18/1*Minneapolis MN'>Minneapolis MN</option>
+<option value='45.51666667/73.55/-5/0/18/1*Montreal Quebec'>Montreal Quebec</option>
+<option value='55.75/-37.616667/3/0/18/1*Moscow Russia'>Moscow Russia</option>
+
+<option value='39.386036/76.754658/-5/144/18/1*Ner Israel Baltimore'>Ner Israel Baltimore</option>
+<option value='32.3333/-34.85/2/0/18/0*Netanya'>Netanya</option>
+<option value='29.95/90.07/-6/0/18/1*New Orleans LA'>New Orleans LA</option>
+<option value='40.908647/74.0094/-5/0/18/1*New York NY'>New York NY</option>
+<option value='35.17/-33.37/2/0/18/1*Nicosia'>Nicosia</option>
+<option value='31.778533/-35.234265/2/750/40/0*Old City ירושלים'>Old City ירושלים</option>
+<option value='39.57/-2.65/1/0/18/1*Palma de Mallorca'>Palma de Mallorca</option>
+<option value='48.84/-2.34/1/0/18/1*Paris'>Paris</option>
+<option value='40.850514/74.123648/-5/0/18/1*Passaic NJ'>Passaic NJ</option>
+
+<option value='32.0833333/-34.766667/2/0/40/0*Petach Tikva'>Petach Tikva</option>
+<option value='39.95/75.16/-5/0/18/1*Philadelphia PA'>Philadelphia PA</option>
+<option value='33.3/112.03/-7/0/18/1*Phoenix AZ'>Phoenix AZ</option>
+<option value='40.43333333/80/-5/0/18/1*Pittsburgh PA'>Pittsburgh PA</option>
+<option value='-33.953657/-25.591284/2/0/18/1*Port Elizabeth'>Port Elizabeth</option>
+<option value='50.09/-14.42/1/0/18/1*Prague'>Prague</option>
+<option value='35.78/78.64/-5/0/18/1*Raleigh NC'>Raleigh NC</option>
+<option value='39.52/119.81/-8/0/18/1*Reno NV'>Reno NV</option>
+<option value='64.15/21.92/0/0/18/1*Reykjavik'>Reykjavik</option>
+
+<option value='56.95/-24.1/2/0/18/1*Riga'>Riga</option>
+<option value='-22.88/43.28/-3/0/18/1*Rio de Janeiro'>Rio de Janeiro</option>
+<option value='41.9/-12.48/1/0/18/1*Rome Italy'>Rome Italy</option>
+<option value='54.08/-12.13/1/0/18/1*Rostock'>Rostock</option>
+<option value='33/-35.5/2/0/18/0*Safed'>Safed</option>
+<option value='38.63/90.18/-6/0/18/1*Saint Louis MS'>Saint Louis MS</option>
+<option value='40.77/111.88/-7/0/18/1*Salt Lake City UT'>Salt Lake City UT</option>
+<option value='37.78333333/122.4166667/-8/0/18/1*San Francisco CA'>San Francisco CA</option>
+<option value='35.69/105.94/-7/0/18/1*Santa Fe NM'>Santa Fe NM</option>
+
+<option value='-33.45/70.67/-6/0/18/1*Santiago'>Santiago</option>
+<option value='32.2/-35.3/2/0/18/0*Shchem'>Shchem</option>
+<option value='32.05/-35.2833/2/0/18/0*Shiloh Israel'>Shiloh Israel</option>
+<option value='39/77/-5/0/18/1*Silver Spring MD'>Silver Spring MD</option>
+<option value='1.27/-116.47/8/0/18/1*Singapore'>Singapore</option>
+<option value='42/-21.43/1/0/18/1*Skopje'>Skopje</option>
+<option value='51.58/-8.12/1/0/18/1*Soest'>Soest</option>
+<option value='42.7/-23.45/2/0/18/1*Sofia'>Sofia</option>
+<option value='40.599235/74.135838/-5/60/18/1*Staten Island NY'>Staten Island NY</option>
+
+<option value='59.34/-18.06/1/0/18/1*Stockholm'>Stockholm</option>
+<option value='-33.87/-151.22/10/0/18/1*Sydney Australia'>Sydney Australia</option>
+<option value='59.43/-24.73/2/0/18/1*Tallinn'>Tallinn</option>
+<option value='40.908467/74.00944/-5/0/18/1*Teaneck NJ'>Teaneck NJ</option>
+<option value='32.08333333/-34.76666667/2/0/18/0*Tel Aviv'>Tel Aviv</option>
+<option value='32.8/-35.5/2/0/18/0*Tiberias'>Tiberias</option>
+<option value='41.2/-19.9/1/0/18/1*Tirana'>Tirana</option>
+<option value='35.7/-139.77/9/0/18/1*Tokyo Japan'>Tokyo Japan</option>
+<option value='39.05/95.67/-6/0/18/1*Topeka KS'>Topeka KS</option>
+
+<option value='43.7188182733902/79.4238097445503/-5/0/18/1*Toronto'>Toronto</option>
+<option value='48.75/-30.22222/2/166/18/1*Uman'>Uman</option>
+<option value='40.793298/73.967275/-5/0/18/1*Upper West Side'>Upper West Side</option>
+<option value='45.8/123.08/-8/0/18/1*Vancouver'>Vancouver</option>
+<option value='48.21/-16.38/1/0/18/1*Vienna'>Vienna</option>
+<option value='54.68/-25.32/2/0/18/1*Vilnius'>Vilnius</option>
+<option value='52.25/-21.0833333333333/1/0/18/1*Warsaw Poland'>Warsaw Poland</option>
+<option value='38.9/77/-5/0/18/1*Washington DC'>Washington DC</option>
+<option value='41.568505/73.044866/-5/0/18/1*Waterbury CT'>Waterbury CT</option>
+
+<option value='40.816244/74.256238/-5/0/18/1*West Orange NJ'>West Orange NJ</option>
+<option value='49.88/97.17/-6/0/18/1*Winnipeg'>Winnipeg</option>
+<option value='45.8/-15.98/1/0/18/1*Zagreb'>Zagreb</option>
+<option value='47.383333/-8.55/1/0/18/1*Zurich'>Zurich</option>
+<option value='31.651756/-35.126424/2/800/18/0*אלון שבות' >אלון שבות</option>
+<option value='31.651756/-35.126424/2/0/18/0*אלון שבות' Selected>0 אלון שבות</option>
+<option value='31.766667/-35.18333333/2/830/40/0*בית וגן'>בית וגן</option>
+<option value='31.700991/-35.114605/2/700/40/0*המגיד 56'>המגיד 56</option>
+<option value='31.975147/-35.137508/2/550/20/0*נחליאל'>נחליאל</option>
+
+<option value='31.878839/-35.239093/2/770/18/0*תל ציון'>תל ציון</option>
+<option value='32.118718/-35.128738/2/770/18/0*רבבה'>רבבה</option>
+<option value='31.605181/-35.218303/2/0/18/0*אבי הנחל'>0 אבי נחל</option>
+<option value='53.3936908/2.2292513/0/0/18/1*Manchester' >Manchester</option>
+<option value='34.171106/118.630283/-8/0/18/1*Yaron'>Yaron's House</option>
+<option value='31.200726/-35.3629369/2/0/18/0*עין בוקק'>0 עין בוקק</option>
+<option value='32.178885/-34.884406/2/0/18/0*רבוצקי 8'>רבוצקי 8</option>
+<option value='26.3110878/80.1328235/-5/0/18/1*Deerfield Beach'>Deerfield Beach FL</option>
+32.178885
+34.884406
+</select>
+
+<INPUT type="checkbox" name="diaspora" value="Selection" onclick="calculate();">Diaspora
+
+</center>
+</td>
+
+
+<td width=27%>
+	Latitude&nbsp;&nbsp;&nbsp;
+	<input name="latitude" value="" size="6" type="text" onchange="setUserInput();calculate()">&deg;&nbsp;
+	<select name="NorthSouth" onchange="setUserInput();calculate()">
+		<option value="N">N&nbsp;</option>
+		<option value="S">S&nbsp;</option>
+	</select>
+</td>
+
+
+
+<td width=30%>
+<center>Time Zone:<select name="timezone" onchange="setUserInput();calculate()"><option value="0">0&nbsp;</option><option value="1" >+1&nbsp;</option><option value="-1">-1&nbsp;</option><option value="2">+2&nbsp;</option><option value="-2">-2&nbsp;</option><option value="3">+3&nbsp;</option><option value="-3">-3&nbsp;</option><option value="4">+4&nbsp;</option><option value="-4">-4&nbsp;</option><option value="5">+5&nbsp;</option><option value="-5">-5&nbsp;</option><option value="6">+6&nbsp;</option><option value="-6">-6&nbsp;</option><option value="7">+7&nbsp;</option><option value="-7">-7&nbsp;</option><option value="8">+8&nbsp;</option><option value="-8">-8&nbsp;</option><option value="9">+9&nbsp;</option><option value="-9">-9&nbsp;</option><option value="10">+10&nbsp;</option><option value="-10">-10&nbsp;</option><option value="11">+11&nbsp;</option><option value="-11">-11</option><option value="12">+12&nbsp;</option><option value="-12">-12&nbsp;</option></select>
+
+</center>
+
+</td>
+</tr>
+
+<tr>
+
+<td>
+<div name=smallOne class=smallOne>
+<input name="nerot" value="18" size=1 type="text" onchange="calculate()">&nbsp;minutes&nbsp;before&nbsp;shkia
+<input name="hite" value="0" size=1 type="text" onchange="calculate()">&nbsp;meters(height)<BR>
+
+<BR>
+<input name="pressure" value="1010" size="2" type="text" onchange="calculate()">&nbsp;millibars&nbsp;(air&nbsp;pressure)
+<input name="temp" value="10" size="1" type="text" onchange="calculate()">&nbsp;&deg;C
+</div>
+</td>
+
+
+<td width=27%>Longitude&nbsp;<input name="longitude" value="" size="6" type="text" onchange="setUserInput();calculate()">&deg;&nbsp;
+	<select name="EastWest" onchange="setUserInput();calculate()">
+		<option value="E">E&nbsp;</option>
+		<option value="W" >W&nbsp;</option>
+	</select>
+</td>
+
+<td><INPUT type="radio" checked name="ampm" value=1 onclick="calculate();">
+AM/PM
+&nbsp;
+<INPUT type="radio" name="ampm" value=0 onclick="calculate();">
+24H&nbsp;<BR>
+<INPUT type="checkbox" name="dst" value="Selection" onclick="calculate();">DST&nbsp;
+<INPUT type="checkbox" name="seconds" value="Selection" onclick="calculate();" checked>Sec
+<INPUT type="checkbox" name="refraction" value="Selection" onclick="calculate();" checked>Refraction
+
+
+</td>
+</tr>
+</table></center>
+
+<BR>
+<center><table BORDER=0 CELLPADDING=2 >
+<tr>
+<td VALIGN=TOP>
+<table BORDER=0 >
+<script>
+
+var whatTitle = new Array("plag", "shabbat", "shkia", "tzeit",  "tefillah", "chatzot", "minchag", "minchak",  "alot", "misheyakir", "hanetz", "shema" )
+
+for (var i = 0; i < whatTitle.length; i++){
+
+var str = ""
+
+	if (i == 23){
+	//if (i == 3){
+		str +="<tr>"
+		str += "<td ALIGN=CENTER>&nbsp;</td>"
+		str += "<td ALIGN=CENTER ></td>"
+		str += "</tr>"
+
+	}
+	else {
+		if (i == 4 || i == 8){
+			str += "</table></td><td VALIGN=TOP><table BORDER=0 >"
+		}
+
+		str +="<tr>"
+		str += "<td ALIGN=CENTER><input type='text' size='9' maxlength='80' onFocus='this.blur()' onClick='this.blur()' name='" + whatTitle[i] + "'></td>"
+		str += "<td ALIGN=CENTER class=btn1 dir=rtl>" + lookupTitle(whatTitle[i]) + "</td>"
+		str += "</tr>"
+	}
+	document.write(str)
+}
+
+</script>
+
+
+
+</table>
+</td>
+</form>
+</tr>
+</table>
+<form>
+<select class="btn" dir =rtl NAME="select" onchange=if(form.select.options[form.select.selectedIndex].value!=""){yearTable(form.select.options[form.select.selectedIndex].value)}>
+<option VALUE="" Selected >Zmanim for a whole year
+<script>
+
+var whatTitle = new Array("alot", "misheyakir", "hanetz", "shema", "tefillah", "chatzot", "minchag", "minchak", "plag", "shkia", "tzeit", "shabbat")
+
+for (var i = 0; i < whatTitle.length; i++){
+	document.write("<option VALUE='" + whatTitle[i] + "'>" + lookupTitle(whatTitle[i]) + "</option>")
+}
+
+</script>
+
+
+</select></form>
+
+
+</center>
+
+
+</body>
+</html>
