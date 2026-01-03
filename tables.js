@@ -4,7 +4,7 @@
 
 
 var month, day, year, a, sun_time, automatic, jewish;
-var offset, offsetCorrection, lat, longitude,AMPM, hite, roundUpOrDown, showSeconds, nerot , diaspora;
+var offset, offsetCorrection, lat, long,AMPM, hite, roundUp, showSeconds, nerot , diaspora;
 
 var eqtime, declin, with_refraction, pressure, temp;
 var dst = 0;
@@ -26,17 +26,15 @@ function getInput(){
 	year = Number(document.myform.year.value);
 	
 	lat = Number(document.myform1.latitude.value);
-	longitude = Number(document.myform1.longitude.value);
+	long = Number(document.myform1.longitude.value);
 	
 	if (document.myform1.NorthSouth.selectedIndex==0) lat=Math.abs(lat);
 		else lat=-Math.abs(lat);
-	if (document.myform1.EastWest.selectedIndex==0) longitude=-Math.abs(longitude);
-		else  longitude=Math.abs(longitude);
+	if (document.myform1.EastWest.selectedIndex==0) long=-Math.abs(long);
+		else  long=Math.abs(long);
 
 	
-	offset = (document.myform1.EastWest.selectedIndex==0 ? Math.round(Math.abs(longitude)/15) : -Math.round(Math.abs(longitude)/15));
-	
-	offsetCorrection = offset - Number(document.myform1.timezone.value);
+	timezone = Number(document.myform1.timezone.value);
 	
 	hite = Number(document.myform1.hite.value);
 	//hite = Math.sqrt(hite) * 0.0348 ;
@@ -77,20 +75,20 @@ function calculate(){
 	
 	
 	
-	roundUpOrDown = 1;
+	roundUp = true;
 	document.myform1.alot.value = hourAngleTwillight(108, 0);
 	document.myform1.misheyakir.value = hourAngleTwillight(101, 0);
 	document.myform1.hanetz.value = hourAngleTwillight(90 + (50.0/60.0) +hite, 0);
-	roundUpOrDown = 2;
+	roundUp = false;
 	document.myform1.shema.value = getAccurate(3, temporalToLocal(3));
 	//document.myform1.shema.value = getAccurate(.01, temporalToLocal(.01));
 	document.myform1.tefillah.value = getAccurate(4, temporalToLocal(4));
 	
 	document.myform1.chatzot.value = getAccurate(6, temporalToLocal(6));
-	roundUpOrDown = 1;
+	roundUp = true;
 	document.myform1.minchag.value = getAccurate(6.5, temporalToLocal(6.5));
 	document.myform1.minchak.value = getAccurate(9.5, temporalToLocal(9.5));
-	roundUpOrDown = 2;
+	roundUp = false;
 	document.myform1.plag.value = getAccurate(10.75, temporalToLocal(10.75));
 	document.myform1.shkia.value = hourAngleTwillight(90 + (50.0/60.0) +hite, 12);
 	
@@ -109,7 +107,7 @@ function calculate(){
  		document.myform1.shabbat.value = ""
  	}
  	
-	roundUpOrDown = 1;
+	roundUp = true;
 	document.myform1.tzeit.value = hourAngleTwillight(96, 12);
 	
 	if (erevMoadim1 == 2)
@@ -321,7 +319,7 @@ var locName = getLocationName(document.myform1.location.options[document.myform1
    }
   
    if (lat>=0) ns=" N"; else ns=" S";
-   if (longitude>=0) ew=" W"; else ew=" E";
+   if (long>=0) ew=" W"; else ew=" E";
    
    
    //if (offset>=0) timezoneString="GMT + " + offsetStr + timezoneString; 
@@ -381,7 +379,7 @@ var locName = getLocationName(document.myform1.location.options[document.myform1
  //title
  text[0] = "<Center><FONT COLOR=black size=+1><B>" + strMonthYear  + "&nbsp;&nbsp;&nbsp;<div class=hebrewTitle align=center>" + locName + "</div>" 
  + "</B><FONT COLOR=red size=-1>Latitude: "  + Math.abs(lat) +deg + ns 
- + "  Longitude: "  + Math.abs(longitude) +deg + ew 
+ + "  Longitude: "  + Math.abs(long) +deg + ew 
  + "<BR>" + timezoneString 
  + ", "  + document.myform1.hite.value + " meters above sealevel";
  
@@ -460,18 +458,18 @@ for (var i=1; i<=dIM; i++) {
 	
 	myDate.setHours(12);
 	
-	roundUpOrDown = 1;
+	roundUp = true;
 	alot = hourAngleTwillight(108, 0);
 	misheyakir = hourAngleTwillight(101, 0);
 	hanetz = hourAngleTwillight(90 + (50.0/60.0) +hite, 0);
-	roundUpOrDown = 2;
+	roundUp = false;
 	shema = getAccurate(3, temporalToLocal(3));
 	tefillah = getAccurate(4, temporalToLocal(4));
 	chatzot = getAccurate(6, temporalToLocal(6));
-	roundUpOrDown = 1;
+	roundUp = true;
 	minchag = getAccurate(6.5, temporalToLocal(6.5));
 	minchak = getAccurate(9.5, temporalToLocal(9.5));
-	roundUpOrDown = 2;
+	roundUp = false;
 	plag = getAccurate(10.75, temporalToLocal(10.75));
 	
 	shkia = hourAngleTwillight(90 + (50.0/60.0) +hite, 12); 
@@ -508,7 +506,7 @@ for (var i=1; i<=dIM; i++) {
  	
  	
 	
-	roundUpOrDown = 1;
+	roundUp = true;
 	tzeit = hourAngleTwillight(96, 12); 
 	
 	if (erevMoadim1 == 2 && myDate.getDay()!= 5){
@@ -730,18 +728,18 @@ function lookupWhat(what){
 
 var whatCalc="";
 switch (what) {
-	case  "alot" : roundUpOrDown = 1;whatCalc = hourAngleTwillight(108, 0); break;
-	case  "misheyakir" : roundUpOrDown = 1;whatCalc = hourAngleTwillight(101, 0); break;
-	case  "hanetz" : roundUpOrDown = 1;whatCalc = hourAngleTwillight(90 + (50.0/60.0) +hite, 0); break;
-	case  "shema" : roundUpOrDown = 2;whatCalc = getAccurate(3, temporalToLocal(3)); break;
-	case  "tefillah" : roundUpOrDown = 2;whatCalc = getAccurate(4, temporalToLocal(4)); break;
-	case  "chatzot" : roundUpOrDown = 2;whatCalc = getAccurate(6, temporalToLocal(6)); break;
-	case  "minchag" : roundUpOrDown = 1;whatCalc = getAccurate(6.5, temporalToLocal(6.5)); break;
-	case  "minchak" : roundUpOrDown = 1;whatCalc = getAccurate(9.5, temporalToLocal(9.5)); break;
-	case  "plag" : roundUpOrDown = 2;whatCalc = getAccurate(10.75, temporalToLocal(10.75)); break;
-	case  "shkia" : roundUpOrDown = 2;whatCalc = hourAngleTwillight(90 + (50.0/60.0) +hite, 12);  break;
-	case  "tzeit" : roundUpOrDown = 1;whatCalc = hourAngleTwillight(96, 12);  break;
-	case  "shabbat" : roundUpOrDown = 2; hourAngleTwillight(90 + (50.0/60.0) +hite, 12); whatCalc = HoursMinutesSeconds(sun_time - (18/60)) ;  break;
+	case  "alot" : roundUp = true;whatCalc = hourAngleTwillight(108, 0); break;
+	case  "misheyakir" : roundUp = true;whatCalc = hourAngleTwillight(101, 0); break;
+	case  "hanetz" : roundUp = true;whatCalc = hourAngleTwillight(90 + (50.0/60.0) +hite, 0); break;
+	case  "shema" : roundUp = false;whatCalc = getAccurate(3, temporalToLocal(3)); break;
+	case  "tefillah" : roundUp = false;whatCalc = getAccurate(4, temporalToLocal(4)); break;
+	case  "chatzot" : roundUp = false;whatCalc = getAccurate(6, temporalToLocal(6)); break;
+	case  "minchag" : roundUp = true;whatCalc = getAccurate(6.5, temporalToLocal(6.5)); break;
+	case  "minchak" : roundUp = true;whatCalc = getAccurate(9.5, temporalToLocal(9.5)); break;
+	case  "plag" : roundUp = false;whatCalc = getAccurate(10.75, temporalToLocal(10.75)); break;
+	case  "shkia" : roundUp = false;whatCalc = hourAngleTwillight(90 + (50.0/60.0) +hite, 12);  break;
+	case  "tzeit" : roundUp = true;whatCalc = hourAngleTwillight(96, 12);  break;
+	case  "shabbat" : roundUp = false; hourAngleTwillight(90 + (50.0/60.0) +hite, 12); whatCalc = HoursMinutesSeconds(sun_time - (18/60)) ;  break;
 
 }
 return whatCalc;
@@ -886,7 +884,7 @@ var locName = getLocationName(document.myform1.location.options[document.myform1
   }
  
   if (lat>=0) ns=" N"; else ns=" S";
-  if (longitude>=0) ew=" W"; else ew=" E";
+  if (long>=0) ew=" W"; else ew=" E";
   
   
   //if (offset>=0) timezoneString="GMT + " + offsetStr + timezoneString; 
@@ -907,7 +905,7 @@ var locName = getLocationName(document.myform1.location.options[document.myform1
  
  text[0] += "&nbsp;&nbsp;&nbsp;" + locName  
  + "</span><BR></B><FONT COLOR=red size=-1>Latitude: "  + Math.abs(lat) +deg + ns 
- + "  Longitude: "  + Math.abs(longitude) +deg + ew 
+ + "  Longitude: "  + Math.abs(long) +deg + ew 
  + "<BR>" + timezoneString 
 
  if (what == "hanetz" || what == "shkia"){
@@ -1219,7 +1217,7 @@ function yearShabbat() {
 	}
 
 	if (lat>=0) ns=" N"; else ns=" S";
-	if (longitude>=0) ew=" W"; else ew=" E";
+	if (long>=0) ew=" W"; else ew=" E";
 
 
 	//if (offset>=0) timezoneString="GMT + " + offsetStr + timezoneString; 
@@ -1236,7 +1234,7 @@ function yearShabbat() {
 	//title
 	text[0] = "<Center><FONT COLOR=black size=+1><B>" + strYear  + "&nbsp;&nbsp;&nbsp;<div class=hebrewTitle align=center>" + locName + "</div>" 
 	+ "</B><FONT COLOR=red size=-1>Latitude: "  + Math.abs(lat) +deg + ns 
-	+ "  Longitude: "  + Math.abs(longitude) +deg + ew 
+	+ "  Longitude: "  + Math.abs(long) +deg + ew 
 	+ "<BR>" + timezoneString 
 	+ ", "  + document.myform1.hite.value + " meters above sealevel"
   	+ "<BR>Nerot:&nbsp;" + nerot + "&nbsp;minutes&nbsp;before&nbsp;shkia";
@@ -1378,7 +1376,7 @@ for( ; Date.parse(myDate) < Date.parse(myEndDate); myDate = new Date(Date.parse(
 	
 	myDate.setHours(12);
 	
-	roundUpOrDown = 2;
+	roundUp = false;
 	
 	shkia = hourAngleTwillight(90 + (50.0/60.0) +hite, 12); 
 	
@@ -1418,7 +1416,7 @@ for( ; Date.parse(myDate) < Date.parse(myEndDate); myDate = new Date(Date.parse(
  	
  	
 	
-	roundUpOrDown = 1;
+	roundUp = true;
 	tzeit = hourAngleTwillight(96, 12); 
 	
 	
@@ -1449,13 +1447,13 @@ for( ; Date.parse(myDate) < Date.parse(myEndDate); myDate = new Date(Date.parse(
 		if (erevMoadim1 != ""){
 			
 			
-			roundUpOrDown = 2;
+			roundUp = false;
 			shkia = hourAngleTwillight(90 + (50.0/60.0) +hite, 12); 
 
 			if (erevMoadim1 == 1)
 				shabbat = "<B>" + HoursMinutesSeconds(sun_time - (nerot/60)) + "*</B>" ;
 			else if (erevMoadim1 == 2 && myDate.getDay()!= 5){
-				roundUpOrDown = 1;
+				roundUp = true;
 				tzeit = hourAngleTwillight(96, 12); 
 				shabbat = "<B>" + HoursMinutesSeconds(sun_time + (10/60)) + "*</B>" ;
 			}
@@ -1468,9 +1466,9 @@ for( ; Date.parse(myDate) < Date.parse(myEndDate); myDate = new Date(Date.parse(
 		month = myDate.getUTCMonth()+1;
 		year =  myDate.getUTCFullYear();
 		day = myDate.getUTCDate();
-		roundUpOrDown = 2;
+		roundUp = false;
 		shkia = hourAngleTwillight(90 + (50.0/60.0) +hite, 12); 
-		roundUpOrDown = 1;
+		roundUp = true;
 		tzeit = hourAngleTwillight(96, 12); 
 			
 	}
