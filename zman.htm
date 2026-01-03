@@ -6,6 +6,8 @@
    <title>Zmanim</title>
 <script SRC="datepicker.js">
 </script>
+<script src="update.js"></script>
+<script src="tables.js"></script>
 <script SRC="zman.js">
 </script>
 <script SRC="astrocalc.js">
@@ -435,7 +437,7 @@ var str = ""
 </tr>
 </table>
 <form>
-<select class="btn" dir =rtl NAME="select" onchange=if(form.select.options[form.select.selectedIndex].value!=""){yearTable(form.select.options[form.select.selectedIndex].value)}>
+<select class="btn" dir =rtl NAME="select" onchange="if(form.select.options[form.select.selectedIndex].value!=''){yearTable(form.select.options[form.select.selectedIndex].value)}">
 <option VALUE="" Selected >Zmanim for a whole year
 <script>
 
