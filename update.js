@@ -440,6 +440,18 @@ function moadim(dow, hmonth, hday, hyear) {
 	return "";
 }
 
+function daysInM(m, y) {
+	var n=31
+	m=m-1
+	
+	if ((m==3) || (m==5) || (m==8) || (m==10))  n--;
+	if (m==1) {
+		n=28;
+		if (((y % 4) == 0) && (((y % 100) != 0) || ((y % 400) == 0))) n=29
+	}
+	return n;	
+}
+
 function DOW(day,month,year) {
 	var a = Math.floor((14 - month)/12);
 	var y = year - a;

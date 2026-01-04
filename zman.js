@@ -380,11 +380,11 @@ function getAccurate(hour) {
   const location = {lat, long, timezone, dst};
   const atmospheric = {pressure, temp};
   let time = (
-    /* (graMga == 'MGA')
+    (graMga == 'MGA')
     ? ( with_refraction
 		? temporalHourR(hour, date, location, atmospheric, alotDeg)
 		: temporalHourD(hour, date, location, alotDeg) )
-    :  */( with_refraction
+    : ( with_refraction
 		? temporalHourR(hour, date, location, atmospheric)
 		: temporalHourS(hour, date, location) )
   );

@@ -58,7 +58,18 @@ function getInput(){
 	
 	dst = document.myform1.dst.checked;	
 	
+	alotDeg = Number(document.myform1.alotDeg.value);
+	misheyakirDeg = Number(document.myform1.misheyakirDeg.value);
+	tzeitDeg = Number(document.myform1.tzeitDeg.value);
+	graMga = document.myform1.GRA_MGA.value;
+	AMPM = Number(document.myform1.ampm.value);
 	
+	if (diaspora != 2) {
+		diaspora = document.myform1.diaspora.checked;
+	} else {
+		if (!document.myform1.diaspora.checked) 
+			diaspora = 0;
+	}
 }
 
 
@@ -132,160 +143,6 @@ function calculate(){
 			document.myform1.elements[i].value=" --:--";
 		}
 	}
-	
-	//writeResults();
-	
-	
-}
-
-function writeResults(){
-
-
-	var htmlText="";
-	htmlText += "<html><head>"
-	htmlText += "<title>Results Table</title>"
-	htmlText += "</head>"
-
-	htmlText += "<body BGCOLOR=#FFFFFF TEXT=#000000 LINK=#0000FF VLINK=#663399 ALINK=#FF0000>"
-
-	htmlText += "<div align=\"center\"><center>"
-
-	htmlText += "<TABLE width=700 border=1 cellpadding=1 cellspacing=0 bordercolor=Black>"
-
-	  htmlText += "<TR>"
-	  htmlText += "<TD COLSPAN=14>"
-	  htmlText += "<FONT COLOR=red size=+1><P ALIGN=center>" + month + "/" + day + "/" + year  + " Latitude = " + lat + "</FONT>"
-	  htmlText += "</TD>"
-	  htmlText += "</TR>"
-
-
-
-
-
-	 htmlText += "<TR>"
-
-	 var whatTitle = new Array("Temporal&nbsp;Hour","Declination", "New&nbsp;Declination", "Hour&nbsp;Angle", "New&nbsp;Hour&nbsp;Angle", "Azimuth", "Altitude","Apparent&nbsp;Altitude")
-
-	  for( var j = 0; j<8; j++){
-
-		 htmlText += "<TD bgcolor=#CCCCCC>"
-		 htmlText +="<P ALIGN=center>"
-		 htmlText += (whatTitle[j]);
-		 htmlText += "</TD>"
-	 }
-
-	   
-	htmlText += "</TR>"
-
-	
-	var std;
-	  for (var i=1; i<=counter1; i++)
-	  {
-		strB=strArray1[i];
-		
-		
-		if(i % 2 == 0){
-			htmlText += "<TR bgcolor=#CCCCCC>"
-		}
-		else {
-			
-			htmlText += "<TR bgcolor=#FFFFFF>"
-		}
-	
-		for(var j = 0; j < 8; j++){
-			htmlText += "<TD>"
-			
-			htmlText +="<P ALIGN=center><FONT size=-1>"
-			htmlText +=strB[j];
-			htmlText += "</TD>"
-		}
-	  htmlText +=  "</TR>"            
-	  }
-	
-	  htmlText += "</TABLE>"
-	  htmlText += "</body></html>"
-	  
-	  var a = window.open("")
-	  a.document.open();
-	  a.document.write(htmlText);
-  	a.document.close();
-}
-
-function getLocationName(LatLong) {
-
- var n=LatLong.length;
- var latStr="", s=0, s1=0, star=0;
- for (var i=0; i<n; i++) {if (LatLong.charAt(i)=='/') {s=i;break}};
- for (var i=s+1; i<n; i++) {if (LatLong.charAt(i)=='/') {s1=i;break}};
- for (var i=s1+1; i<n; i++) {if (LatLong.charAt(i)=='*') {star=i;break}};
-
- //var latStr = LatLong.substring(0,s);
- //var longStr = LatLong.substring(s+1,s1);
- 
- locName = LatLong.substring(star+1,n);
- return locName;
- 
-}
-
-function getLocation(LatLong) {
-
- var n=LatLong.length;
- var latStr="", s=0, s1=0, star=0, s2=0;s3=0;s4=0;
- for (var i=0; i<n; i++) {if (LatLong.charAt(i)=='/') {s=i;break}};
- for (var i=s+1; i<n; i++) {if (LatLong.charAt(i)=='/') {s1=i;break}};
- for (var i=s1+1; i<n; i++) {if (LatLong.charAt(i)=='/') {s2=i;break}};
- for (var i=s2+1; i<n; i++) {if (LatLong.charAt(i)=='/') {s3=i;break}};
- for (var i=s3+1; i<n; i++) {if (LatLong.charAt(i)=='/') {s4=i;break}};
- 
- for (var i=s4+1; i<n; i++) {if (LatLong.charAt(i)=='*') {star=i;break}};
-
- var latStr = LatLong.substring(0,s);
- document.myform1.latitude.value=Math.abs(latStr);
- lat = Number(latStr);
- if (lat>=0) {ns=" N";  document.myform1.NorthSouth.options[0].selected=true;}
- else {ns=" S"; document.myform1.NorthSouth.options[1].selected=true;}
-
- var longStr = LatLong.substring(s+1,s1);
- document.myform1.longitude.value=Math.abs(longStr);
- longit = Number(longStr);
- if (longit<=0) {ew=" E"; document.myform1.EastWest.options[0].selected=true;}
- else {ew=" W"; document.myform1.EastWest.options[1].selected=true;}
- var tzString = LatLong.substring(s1+1,s2);
- locOffset=Number(tzString);
- 
- 
- 
- var nn=2*locOffset;
- if (locOffset>0) nn=nn-1;
- document.myform1.timezone.options[Math.abs(nn)].selected=true;
-
- var ht = LatLong.substring(s2+1,s3);
- 
- document.myform1.hite.value=Number(ht);
- 
- nerot = LatLong.substring(s3+1,s4);
- document.myform1.nerot.value = Number(nerot);
-
- diaspora = LatLong.substring(s4+1,star);
- document.myform1.diaspora.checked = Number(diaspora);
-
-
- locName = LatLong.substring(star+1,n);
-
- calculate();
- //calculate();
-}
-
-function daysInM(m, y) {
-	var n=31
-	m=m-1
-	
-	if ((m==3) || (m==5) || (m==8) || (m==10))  n--;
-	if (m==1) {
-		n=28;
-		if (((y % 4) == 0) && (((y % 100) != 0) || ((y % 400) == 0))) n=29
-	}
-	return n;	
 }
 
 function table(what) {
