@@ -1,24 +1,10 @@
 function setDate(){
-var mydate = new Date();
-document.myform.month.selectedIndex = mydate.getMonth();
-document.myform.day.selectedIndex = mydate.getDate()-1;
-document.myform.year.selectedIndex = 20;
-ud(document.myform.month);
-document.whichweek.weekdate.value = showdate();
-}
-
-
-function gm(num) {
- var mydate = new Date();
- mydate.setDate(1);
- mydate.setMonth(num-1);
- var datestr = "" + mydate;
- return datestr.substring(4,7);
-}
-
-function gy(num) {
-  var mydate = new Date();
-  return (eval(mydate.getFullYear()) - 20 + num);
+	var mydate = new Date();
+	document.myform.month.selectedIndex = mydate.getMonth();
+	document.myform.day.selectedIndex = mydate.getDate()-1;
+	document.myform.year.selectedIndex = 20;
+	ud(document.myform.month);
+	document.whichweek.weekdate.value = showdate();
 }
 
 function ud(mon) {
@@ -93,6 +79,13 @@ function showdate() {
         document.myform.year.options[k].value)
 }
 
+
+function checkDST(){
+	month = Number(document.myform.month.value);
+	day = Number(document.myform.day.value);
+	year = Number(document.myform.year.value);
+	document.myform1.dst.checked = DST(year, month, day);
+}
 
 /*  updateFromGregorian  --  Update all calendars from Gregorian.
                              "Why not Julian date?" you ask.  Because
@@ -247,36 +240,14 @@ function calcHebrew()
 
 
 function calcHMonth(){
-	dIHM = hebrew_month_days(new Number(document.hebrew.year.value), document.hebrew.month.value)	
-	hud(dIHM);
-}
-
-
-function hud(dIM) {
-  
-  if (dIM == 30){
-  	document.hebrew.day.options[29] = new Option("30");
-        document.hebrew.day.options[29].value = "30";
-  }
-  else {
-  	document.hebrew.day.options[29] = null;
-  }
-
-  //if (document.hebrew.day.selectedIndex == -1)
-  //  document.myform.day.selectedIndex = 0;
-
+	dIM = hebrew_month_days(document.hebrew.year.value, document.hebrew.month.value)	
+  	document.hebrew.day.options[29] = (dIM == 30 ? new Option("30", "30") : null);
 }
 
 
 
 function erevMoadim(dow, hmonth, hday) {
-	
-	if (hmonth == "getDate"){
-		hmonth = new Number(document.hebrew.month.value);
-		hday = new Number(document.hebrew.day.value);
-		
-    	}
-    	if(hmonth == 6) {
+	if(hmonth == 6) {
 		if(hday == 29)
 			return 1
 	}
@@ -284,7 +255,7 @@ function erevMoadim(dow, hmonth, hday) {
 		if(hday == 9 || hday == 0 || ((hday == 14  || hday == 21 ) && dow != 7)){
 			return 1
 		}
-		if (hday== 1 || ((hday == 14  || hday == 21 ) && dow == 7) || ((hday == 15 || hday == 22) && diaspora == 1)){
+		if (hday== 1 || ((hday == 14  || hday == 21 ) && dow == 7) || ((hday == 15 || hday == 22) && diaspora)){
 			return 2
 		}
 		
@@ -293,7 +264,7 @@ function erevMoadim(dow, hmonth, hday) {
 	else if(hmonth == 1) {
 		if((hday == 14  || hday == 20 ) && dow != 7)
 			return 1
-		else if (((hday == 14  || hday == 20 ) && dow == 7) || ((hday == 15 || hday == 21) && diaspora == 1))
+		else if (((hday == 14  || hday == 20 ) && dow == 7) || ((hday == 15 || hday == 21) && diaspora))
 			return 2
 		
 	}
@@ -301,7 +272,7 @@ function erevMoadim(dow, hmonth, hday) {
 	else if(hmonth == 3) {
 		if(hday == 5 && dow != 7)
 			return 1
-		else if((hday == 5 && dow == 7) || (hday == 6 && diaspora == 1))
+		else if((hday == 5 && dow == 7) || (hday == 6 && diaspora))
 			return 2
 	}
 	
@@ -311,9 +282,6 @@ function erevMoadim(dow, hmonth, hday) {
 
 
 function moadim(dow, hmonth, hday, hyear) {
-	//var hmonth = document.hebrew.month.value;
-	//var hday = document.hebrew.day.value;
-	
 	if(hmonth == 7) {
 		if(hday == 1 || hday == 2)
 			return "ראש השנה"
@@ -327,7 +295,7 @@ function moadim(dow, hmonth, hday, hyear) {
 			return "סכות"
 		else if(hday == 22)	
 			return "שמיני עצרת"
-		else if(hday == 23 && diaspora == 1)
+		else if(hday == 23 && diaspora)
 			return "שמחת תורה"
 	}
 	else if(hmonth == 9) {
@@ -344,7 +312,6 @@ function moadim(dow, hmonth, hday, hyear) {
 				return "חנוכה"
 			}	
 		}
-	
 		else if(hday == 10)
 			return "עשרה בטבת"
 	}
@@ -368,7 +335,6 @@ function moadim(dow, hmonth, hday, hyear) {
 				return "שושן פורים"
 		} 
 	}
-	
 	else if(hmonth == 13) {
 		if(hday == 11 && dow == 5)
 			return "תענית אסתר"
@@ -387,7 +353,7 @@ function moadim(dow, hmonth, hday, hyear) {
 			return "תענית בכורות"
 		else if(hday >= 15 && hday <= 21)
 			return "פסח"
-		else if(hday == 22 && diaspora == 1)
+		else if(hday == 22 && diaspora)
 			return "פסח"
 			
 		if((hday == 25  && dow == 5) || (hday == 26 && dow == 5))
@@ -417,7 +383,7 @@ function moadim(dow, hmonth, hday, hyear) {
 	else if(hmonth == 3) {
 		if(hday == 6)
 			return "שבועות"
-		else if(hday == 7 && diaspora == 1)
+		else if(hday == 7 && diaspora)
 			return "שבועות"
 	}
 	else if(hmonth == 4) {
@@ -434,9 +400,6 @@ function moadim(dow, hmonth, hday, hyear) {
 		if(hday == 15)
 			return "ט\"ו באב"
 	}
-	
-	
-
 	return "";
 }
 
