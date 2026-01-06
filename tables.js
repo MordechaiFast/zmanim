@@ -51,9 +51,6 @@ function getInput(){
 	temp = 273 + Number(document.myform1.temp.value);
 	
 	nerot = Number(document.myform1.nerot.value);
-	
-	//diaspora = document.myform1.diaspora.checked;
-	
 	dst = document.myform1.dst.checked;	
 	
 	alotDeg = Number(document.myform1.alotDeg.value);
@@ -106,7 +103,8 @@ function calculate(){
 	
 	
 	
-	calcGregorian();
+	updateFromGregorian();
+    calcHebrew();
 	
 	document.hebrew.holidays.value = moadim(dayOfWeek, hmonth, hday, hyear);
 	
@@ -175,9 +173,8 @@ var locName = getLocationName();
  if (jewish == 1){
  	myMonth = shortMonthName[month-1] + "";
  	var myMonthNum = month-1;
-  	var date1;
- 	var j = new Number(hebrew_to_jd((new Number(document.hebrew.year.value)), document.hebrew.month.value, 1));
- 	date1 = jd_to_gregorian(j);
+  	var j = hebrew_to_jd(hyear, hmonth, 1);
+ 	var date1 = jd_to_gregorian(j);
  	
  	year = date1[0];
  	month = date1[1];
@@ -592,12 +589,7 @@ var deg = String.fromCharCode(176);
 getInput();
 
 if (what == "molad"){
-	var hYear = new Number(document.hebrew.year.value)
-
 	var a = window.open("molad.asp?year="+hYear)
-	//a.document.open();
-	//a.document.write(strResponse);
-	//a.document.close();
 }
 else {   
 	
@@ -612,9 +604,8 @@ else
 
 if (jewish == 1){
 	var numDays = 30;
-	var date1;
-	var j = new Number(hebrew_to_jd((new Number(document.hebrew.year.value)), 7, 1));
-	date1 = jd_to_gregorian(j);
+	var j = hebrew_to_jd(hyear, 7, 1);
+	var date1 = jd_to_gregorian(j);
 
 	year = date1[0];
 	month = date1[1];
@@ -941,7 +932,7 @@ function yearShabbat() {
 
 	var strYear = year;
 	if (jewish == 1)
-		var strYear = document.hebrew.year.value
+		var strYear = hyear
 
 
 
@@ -1001,9 +992,8 @@ function yearShabbat() {
 	
 	if (jewish == 1){
 		
-		var date1;
-		var j = new Number(hebrew_to_jd((new Number(document.hebrew.year.value)) - 1, 6, 29));
-		date1 = jd_to_gregorian(j);
+		var j = hebrew_to_jd(hyear - 1, 6, 29);
+		var date1 = jd_to_gregorian(j);
 
 		year = date1[0];
 		month = date1[1];
@@ -1013,7 +1003,7 @@ function yearShabbat() {
 
 		myDate.setHours(12);
 		
-		var j = new Number(hebrew_to_jd((new Number(document.hebrew.year.value)) + 1, 7, 1));
+		j = hebrew_to_jd(hyear + 1, 7, 1);
 		date1 = jd_to_gregorian(j);
 
 		year = date1[0];

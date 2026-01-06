@@ -87,6 +87,40 @@ function checkDST(){
 	document.myform1.dst.checked = DST(year, month, day);
 }
 
+function DST(year, month, day) {
+	if(diaspora == 1) {
+		if (month > 3 && month < 11)
+			return true
+		else {
+			if (month == 3 && day >= NthDOW(2, 1, 3, year))
+				return true
+			else if (month == 11 && day < NthDOW(1, 1, 11, year))
+				return true;
+		}
+	} else if(diaspora == 2) {
+		// New Zealand DST
+		if (month > 9 || month < 4)
+			return true
+		else {
+			if (month == 9 && day >= NthDOW(0, 1, 9, year))
+				return true
+			else if (month == 4 && day < NthDOW(1, 1, 4, year))
+				return true;
+		}
+	} else {
+		// Israel DST
+		if (month > 3 && month < 10)
+			return true
+		else {
+			if (month == 3 && day >= NthDOW(0, 6, 3, year))
+				return true
+			else if (month == 10 && day < NthDOW(0, 1, 10, year))
+				return true;
+		}
+	}
+	return false;
+}
+
 /*  updateFromGregorian  --  Update all calendars from Gregorian.
                              "Why not Julian date?" you ask.  Because
                              starting from Gregorian guarantees we're
@@ -187,38 +221,11 @@ function updateFromGregorian()
 	
 }
 
-//  calcGregorian  --  Perform calculation starting with a Gregorian date
-
-function calcGregorian()
-{
-    updateFromGregorian();
-    calcHebrew();
-}
-
-
-/*  JHMS  --  Convert Julian time to hour, minutes, and seconds,
-              returned as a three-element array.  */
-
-function jhms(j) {
-    var ij;
-
-    j += 0.5;                 /* Astronomical to civil */
-    ij = (j - Math.floor(j)) * 86400.0;
-    return new Array(
-                     Math.floor(ij / 3600),
-                     Math.floor((ij / 60) % 60),
-                     Math.floor(ij % 60));
-}
-
 //  calcJulian  --  Perform calculation starting with a Julian date
 
 function calcJulian(j)
 {
-    var date, time;
-
-    j = new Number(j);
-    date = jd_to_gregorian(j);
-    time = jhms(j);
+    var date = jd_to_gregorian(j);
     
     document.myform.year.value = date[0];
     document.myform.month.selectedIndex = date[1] - 1;
