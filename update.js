@@ -7,66 +7,26 @@ function setDate(){
 	document.whichweek.weekdate.value = showdate();
 }
 
-function ud(mon) {
-  var i = mon.selectedIndex;
+function ud() {		// update day list
+    const gregorian = document.myform;
+    const dayNum = Number(gregorian.day.value);
+    const monthNum = Number(gregorian.month.value);
+    const yearNum = Number(gregorian.year.value);
+    const days = daysInM(monthNum, yearNum);
+    gregorian.day.options.length = 0;
+    for (let d = 1; d <= days; d++)
+        gregorian.day.options.add(new Option(d, d));
+    gregorian.day.value = dayNum;
+    if (gregorian.day.selectedIndex == -1)
+        gregorian.day.selectedIndex = 0;
+}
 
-  if(mon.options[i].value == "2") {
-    document.myform.day.options[30] = null;
-    document.myform.day.options[29] = null;
-    var j = document.myform.year.selectedIndex;
-    var year = eval(document.myform.year.options[j].value);
-    if ( ((year%400)==0) || (((year%100)!=0) && ((year%4)==0)) ) {
-      if (document.myform.day.options[28] == null) {
-        document.myform.day.options[28] = new Option("29");
-        document.myform.day.options[28].value = "29";
-      }
-    } else {
-      document.myform.day.options[28] = null;
-    }
-
-  }
-
-  if(mon.options[i].value == "1" ||
-     mon.options[i].value == "3" ||
-     mon.options[i].value == "5" ||
-     mon.options[i].value == "7" ||
-     mon.options[i].value == "8" ||
-     mon.options[i].value == "10" ||
-     mon.options[i].value == "12")
-  {
-    if (document.myform.day.options[28] == null) {
-      document.myform.day.options[28] = new Option("29");
-      document.myform.day.options[28].value = "29";
-    }
-    if (document.myform.day.options[29] == null) {
-      document.myform.day.options[29] = new Option("30");
-      document.myform.day.options[29].value = "30";
-    }
-    if (document.myform.day.options[30] == null) {
-      document.myform.day.options[30] = new Option("31");
-      document.myform.day.options[30].value = "31";
-    }
-  }
-
-  if(mon.options[i].value == "4" ||
-     mon.options[i].value == "6" ||
-     mon.options[i].value == "9" ||
-     mon.options[i].value == "11")
-  {
-    if (document.myform.day.options[28] == null) {
-      document.myform.day.options[28] = new Option("29");
-      document.myform.day.options[28].value = "29";
-    }
-    if (document.myform.day.options[29] == null) {
-      document.myform.day.options[29] = new Option("30");
-      document.myform.day.options[29].value = "30";
-    }
-    document.myform.day.options[30] = null;
-  }
-
-  if (document.myform.day.selectedIndex == -1)
-    document.myform.day.selectedIndex = 0;
-
+function calcHMonth(){	// update hebrew day list
+	const hebrew = document.hebrew;
+	const year = Number(hebrew.year.value);
+	const month = Number(hebrew.month.value);
+  	hebrew.day.options[29] =
+		hebrew_month_days(year, month) == 30 ? new Option("30", "30") : null;
 }
 
 
@@ -84,7 +44,9 @@ function checkDST(){
 	month = Number(document.myform.month.value);
 	day = Number(document.myform.day.value);
 	year = Number(document.myform.year.value);
-	document.myform1.dst.checked = DST(year, month, day);
+	
+	const inputs = document.myform1;
+	inputs.dst.checked = DST(year, month, day);
 }
 
 function DST(year, month, day) {
@@ -121,134 +83,67 @@ function DST(year, month, day) {
 	return false;
 }
 
-/*  updateFromGregorian  --  Update all calendars from Gregorian.
-                             "Why not Julian date?" you ask.  Because
-                             starting from Gregorian guarantees we're
-                             already snapped to an integral second, so
-                             we don't get roundoff errors in other
-                             calendars.  */
 
-function updateFromGregorian()
-{
-    var j, year, mon, mday, 
-        weekday, julcal, hebcal, islcal, hmindex, utime, isoweek,
-        may_countcal, mayhaabcal, maytzolkincal, bahcal, frrcal,
-        indcal, isoday, xgregcal;
-
-
-    mon = Number(document.myform.month.value);
-    mday = Number(document.myform.day.value);
-    year = Number(document.myform.year.value);
-
-    //  Update Julian day
-
-    j = gregorian_to_jd(year, mon, mday)
-
-
-    //  Update Hebrew Calendar
-
-    hebcal = jd_to_hebrew(j);
-    
+function updateFromGregorian() {	// Update hebrew calendar from Gregorian
+	year = Number(document.myform.year.value);
+    month = Number(document.myform.month.value);
+    day = Number(document.myform.day.value);
+	
+	const hebrew = document.hebrew;
+    const jd = gregorian_to_jd(year, month, day)
+    const hebcal = jd_to_hebrew(jd);
     if (hebrew_leap(hebcal[0])) {
-            var hebMonth = new Array("תשרי", "מרחשון", "כסלו", "טבת", "שבט", "אדר א'", "אדר ב'", "ניסן", "אייר", "סיון", "תמוז", "אב", "אלול")
-	    var hebMonthValue = new Array(7,8,9,10,11,12,13,1,2,3,4,5,6);
+		const hebMonthName = ["תשרי", "מרחשון", "כסלו", "טבת", "שבט", "אדר א'", "אדר ב'", "ניסן", "אייר", "סיון", "תמוז", "אב", "אלול"];
+	    const hebMonthValue = [7,8,9,10,11,12,13,1,2,3,4,5,6];
+		hebrew.month.options.length = 13;
+		for (let i = 0; i < hebMonthName.length; i++)
+			hebrew.month.options[i] = new Option(hebMonthName[i], hebMonthValue[i]);
+	} else {
+		const hebMonthName = ["תשרי", "מרחשון", "כסלו", "טבת", "שבט", "אדר", "ניסן", "אייר", "סיון", "תמוז", "אב", "אלול"];
+		const hebMonthValue = [7,8,9,10,11,12,1,2,3,4,5,6];
+		hebrew.month.options.length = 12;
+		for (var i = 0; i < hebMonthName.length; i ++)
+			hebrew.month.options[i] = new Option(hebMonthName[i], hebMonthValue[i]);
+	}
+    hebrew.year.value = hebcal[0];
+    hebrew.month.value = hebcal[1];
+    hebrew.day.value = hebcal[2];
+	calcHMonth();
+    hebrew.leap.value = yearType(hebcal[0]);
+}
 
-    		document.hebrew.month.options.length = 13;
-            
-            for (var i = 0; i < hebMonth.length; i ++){
-                    document.hebrew.month.options[i] = new Option(hebMonth[i]);
-                    document.hebrew.month.options[i].value = hebMonthValue[i];
-            }
-            	
-        } else {
-            var hebMonth = new Array("תשרי", "מרחשון", "כסלו", "טבת", "שבט", "אדר", "ניסן", "אייר", "סיון", "תמוז", "אב", "אלול")
-    	    var hebMonthValue = new Array(7,8,9,10,11,12,1,2,3,4,5,6);
-		
-            document.hebrew.month.options.length = 12;
-            for (var i = 0; i < hebMonth.length; i ++){
-            	document.hebrew.month.options[i] = new Option(hebMonth[i]);
-    		document.hebrew.month.options[i].value = hebMonthValue[i];
-            }
-            
-        }
-    
-    
-    
-    document.hebrew.year.value = hebcal[0];
-    
-    //document.hebrew.month.selectedIndex = hebcal[1] - 1;
-    document.hebrew.month.value = hebcal[1];
-    document.hebrew.day.value = hebcal[2];
-    hmindex = hebcal[1];
-    if (hmindex == 12 && !hebrew_leap(hebcal[0])) {
-        hmindex = 14;
-    }
+function yearType(hyear) {   
+    const days = hebrew_year_days(hyear);
+    if(days == 353)
+		return "שנה חסרה רגילה (353 ימים)"
+    else if(days == 354)
+		return  "שנה כסידרה רגילה (354 ימים)"
+    else if(days == 355)
+		return "שנה מלאה רגילה (355 ימים)"
+    else if(days == 383)
+		return "שנה חסרה מעוברת (383 ימים)"
+    else if(days == 384)
+		return "שנה כסידרה מעוברת (384 ימים)"
+    else if(days == 385)
+		return "שנה מלאה מעוברת (385 ימים)"
+    else
+		return "Invalid year length: " + hebrew_year_days(hyear) + " days.";
+}
 
-    
-    
-    switch (hebrew_year_days(hebcal[0])) {
-        case 353:
-            document.hebrew.leap.value = "שנה חסרה רגילה (353 ימים)";
-            break;
-
-        case 354:
-            document.hebrew.leap.value = "שנה כסידרה רגילה (354 ימים)";
-            break;
-
-        case 355:
-            document.hebrew.leap.value = "שנה מלאה רגילה (355 ימים)";
-            break;
-
-        case 383:
-            document.hebrew.leap.value = "שנה חסרה מעוברת (383 ימים)";
-            break;
-
-        case 384:
-            document.hebrew.leap.value = "שנה כסידרה מעוברת (384 ימים)";
-            break;
-
-        case 385:
-            document.hebrew.leap.value = "שנה מלאה מעוברת (385 ימים)";
-            break;
-
-        default:
-            document.hebrew.leap.value = "Invalid year length: " +
-                hebrew_year_days(hebcal[0]) + " days.";
-            break;
-    }
-
+function calcHebrew() {	// Update Gergoran calendar from Hebrew
+    hyear = new Number(document.hebrew.year.value);
+	hmonth = new Number(document.hebrew.month.value);
+	hday = new Number(document.hebrew.day.value);
 	
-	
-}
+	const gregorian = document.myform;
+    const jd = hebrew_to_jd(hyear, hmonth, hday);
+    const gregcal = jd_to_gregorian(jd);
+	gregorian.year.value = gregcal[0];
+	gregorian.month.value = gregcal[1];
+	gregorian.day.value = gregcal[2];
+	ud();
 
-//  calcJulian  --  Perform calculation starting with a Julian date
-
-function calcJulian(j)
-{
-    var date = jd_to_gregorian(j);
-    
-    document.myform.year.value = date[0];
-    document.myform.month.selectedIndex = date[1] - 1;
-    document.myform.day.value = date[2];
-    
-    updateFromGregorian();
-}
-
-//  calcHebrew  --  Update from Hebrew calendar
-
-function calcHebrew()
-{
-    
-    calcJulian(hebrew_to_jd((new Number(document.hebrew.year.value)),
-                          document.hebrew.month.value,
-                          (new Number(document.hebrew.day.value))));
-    
-}
-
-
-function calcHMonth(){
-	dIM = hebrew_month_days(document.hebrew.year.value, document.hebrew.month.value)	
-  	document.hebrew.day.options[29] = (dIM == 30 ? new Option("30", "30") : null);
+	updateFromGregorian(); // ??
 }
 
 
