@@ -3,7 +3,7 @@
 */
 
 
-let month, day, year, hday, hmonth, hyear, jewish,
+let month, day, year, hDay, hMonth, hYear, jewish,
 diaspora, nerot, hite, lat, long, timezone, dst, 
 alotDeg, misheyakirDeg, tzeitDeg, pressure, temp, 
 AMPM, showSeconds, graMga, with_refraction, roundUp, sun_time;
@@ -65,9 +65,9 @@ function getInput(){
 		if (!document.myform1.diaspora.checked) 
 			diaspora = 0;
 	}
-	hday = Number(document.hebrew.day.value);
-	hmonth = Number(document.hebrew.month.value);
-	hyear = Number(document.hebrew.year.value);
+	hDay = Number(document.hebrew.day.value);
+	hMonth = Number(document.hebrew.month.value);
+	hYear = Number(document.hebrew.year.value);
 }
 
 
@@ -89,7 +89,7 @@ function calculate(){
 	document.myform1.plag.value = getAccurate(10.75, temporalToLocal(10.75));
 	document.myform1.shkia.value = hourAngleTwillight(90 + (50.0/60.0) +hite, 12);
 	let dayOfWeek = DOW(day, month, year);
-	let erevMoad = erevMoadim(dayOfWeek, hmonth, hday);
+	let erevMoad = erevMoadim(dayOfWeek, hMonth, hDay);
   	if(dayOfWeek == 6)
  		document.myform1.shabbat.value = HoursMinutesSeconds(sun_time - (nerot/60))
  	else if (erevMoad == 1) 
@@ -100,19 +100,6 @@ function calculate(){
 	document.myform1.tzeit.value = hourAngleTwillight(96, 12);
 	if (erevMoad == 2)
 		document.myform1.shabbat.value = HoursMinutesSeconds(sun_time + (10/60)) + "*"; 
-	
-	
-	
-	updateFromGregorian();
-    calcHebrew();
-	
-	document.hebrew.holidays.value = moadim(dayOfWeek, hmonth, hday, hyear);
-	
-	if(dayOfWeek == 6) {
-		if (document.hebrew.holidays.value != "")
-			document.hebrew.holidays.value += " ";		
-		document.hebrew.holidays.value += getTorahSections(hday, hmonth, hyear);
-	}	
 }
 
 function table(what) {
@@ -173,7 +160,7 @@ var locName = getLocationName();
  if (jewish == 1){
  	myMonth = shortMonthName[month-1] + "";
  	var myMonthNum = month-1;
-  	var j = hebrew_to_jd(hyear, hmonth, 1);
+  	var j = hebrew_to_jd(hYear, hMonth, 1);
  	var date1 = jd_to_gregorian(j);
  	
  	year = date1[0];
@@ -307,7 +294,7 @@ for (var i=1; i<=dIM; i++) {
 	
 	
 	
-	var myMoed = moadim(myDate.getDay()+1, myHebMonth, myHebDay, myHebYear);
+	var myMoed = moadim(myHebDay, myHebMonth, myHebYear);
 	
 	
 	if (myMoed != "")
@@ -604,7 +591,7 @@ else
 
 if (jewish == 1){
 	var numDays = 30;
-	var j = hebrew_to_jd(hyear, 7, 1);
+	var j = hebrew_to_jd(hYear, 7, 1);
 	var date1 = jd_to_gregorian(j);
 
 	year = date1[0];
@@ -932,7 +919,7 @@ function yearShabbat() {
 
 	var strYear = year;
 	if (jewish == 1)
-		var strYear = hyear
+		var strYear = hYear
 
 
 
@@ -992,7 +979,7 @@ function yearShabbat() {
 	
 	if (jewish == 1){
 		
-		var j = hebrew_to_jd(hyear - 1, 6, 29);
+		var j = hebrew_to_jd(hYear - 1, 6, 29);
 		var date1 = jd_to_gregorian(j);
 
 		year = date1[0];
@@ -1003,7 +990,7 @@ function yearShabbat() {
 
 		myDate.setHours(12);
 		
-		j = hebrew_to_jd(hyear + 1, 7, 1);
+		j = hebrew_to_jd(hYear + 1, 7, 1);
 		date1 = jd_to_gregorian(j);
 
 		year = date1[0];
@@ -1092,7 +1079,7 @@ for( ; Date.parse(myDate) < Date.parse(myEndDate); myDate = new Date(Date.parse(
 	
 	
 	
-	var myMoed = moadim(myDate.getDay()+1, myHebMonth, myHebDay, myHebYear);
+	var myMoed = moadim(myHebDay, myHebMonth, myHebYear);
 	
 	
 	if (myMoed == "")

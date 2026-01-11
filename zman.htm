@@ -3,7 +3,7 @@
 
    <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
 
-   <title>Sun Position Zmanim</title>
+   <title>[Working]Sun Position Zmanim</title>
 <script SRC="datepicker.js">
 </script>
 <script SRC="cities.js"></script>
@@ -65,7 +65,7 @@ color: black;
 
 
 </head>
-<body bgcolor="#EFEFCE" background="parchmnt.jpg" onload="initTorahReadings();setDate();loadCities();currentData();checkDST();calculate();calculate();">
+<body bgcolor="#EFEFCE" background="parchmnt.jpg" onload="initTorahReadings();setDate();loadCities();getLocation();checkDST();calculate();">
 
 <center><form name="whichweek" onSubmit="0"><input type="HIDDEN" name="weekdate" size=12 ></form>
 <p>שעות זמניות לפי מקום השמש</p></center>
@@ -76,12 +76,12 @@ color: black;
 <td>
 <center>
 
-<select NAME="month" onChange="ud(this);checkDST();document.whichweek.weekdate.value = showdate();calculate();calculate();">
+<select NAME="month" onChange="updateGregorian();updateFromGregorian();checkDST();calculate();">
 	<option VALUE="1">January&nbsp;<option VALUE="2">February&nbsp;<option VALUE="3">March&nbsp;<option VALUE="4">April&nbsp;<option VALUE="5">May&nbsp;<option VALUE="6">June&nbsp;<option VALUE="7">July&nbsp;<option VALUE="8">August&nbsp;<option VALUE="9">September&nbsp;<option VALUE="10">October&nbsp;<option VALUE="11">November&nbsp;<option VALUE="12">December&nbsp;
 </select>
 
 &nbsp;
-<select NAME="day" onChange="document.whichweek.weekdate.value = showdate();checkDST();calculate();calculate();">
+<select NAME="day" onChange="updateFromGregorian();checkDST();calculate();">
 
 <script>
 	for(let day = 1; day <= 31; day++)
@@ -89,7 +89,7 @@ color: black;
 </script>
 </select>&nbsp;
 
-<select NAME="year" onChange="ud(this.form.month);checkDST();document.whichweek.weekdate.value = showdate();calculate();calculate();">
+<select NAME="year" onChange="updateGregorian();updateFromGregorian();checkDST();calculate();">
 	<script>
 		let thisYear = new Date().getFullYear();
 		for (let year = thisYear - 20; year < thisYear + 10; year++)
@@ -109,18 +109,23 @@ color: black;
 </form>
 <FORM name=hebrew >
 <TD align=middle dir =rtl>
-	<SELECT class="ctr" dir =rtl name=month  onChange="calcHMonth();calcHebrew();document.whichweek.weekdate.value = showdate();checkDST();calculate();" >
-		<option VALUE="" Selected >Zmanim for a whole year
+	<SELECT class="ctr" dir =rtl name=month  onChange="updateFromHebrew();updateHebrew();updateHebrewDescription();checkDST();calculate();" >
+		<script>
+			const hebMonthName = ["תשרי", "מרחשון", "כסלו", "טבת", "שבט", "אדר א'", "אדר ב'", "ניסן", "אייר", "סיון", "תמוז", "אב", "אלול"];
+			const hebMonthValue = [7,8,9,10,11,12,13,1,2,3,4,5,6];
+			for (let i = 0; i < hebMonthName.length; i++)
+				hebrew.month.options[i] = new Option(hebMonthName[i], hebMonthValue[i]);
+		</script>
 	</SELECT>
 
-	<select DIR="RTL" NAME="day" onChange="calcHebrew();document.whichweek.weekdate.value = showdate();checkDST();calculate();">
+	<select DIR="RTL" NAME="day" onChange="updateFromHebrew();updateHebrewDescription();checkDST();calculate();">
 		<script>
 			for(let day = 1; day <= 30; day++)
 				this.hebrew.day.add(new Option(day, day));
 		</script>
 	</select>
 
-	<select DIR="RTL" NAME=year onChange="calcHMonth();calcHebrew();document.whichweek.weekdate.value = showdate();checkDST();calculate();">
+	<select DIR="RTL" NAME=year onChange="updateFromHebrew();updateHebrew();updateHebrewDescription();checkDST();calculate();">
 		<script>
 			let thisHebrewYear = new Date().getFullYear() + 3760;
 			for (let year = thisHebrewYear - 20; year < thisHebrewYear + 10; year++)
