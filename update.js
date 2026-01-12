@@ -145,9 +145,10 @@ function updateFromHebrew() {	// Update Gergoran calendar from Hebrew
 
 
 function checkDST(){
-	month = Number(document.myform.month.value);
-	day = Number(document.myform.day.value);
-	year = Number(document.myform.year.value);
+	const gregorian = document.myform;
+	month = Number(gregorian.month.value);
+	day = Number(gregorian.day.value);
+	year = Number(gregorian.year.value);
 	
 	const inputs = document.myform1;
 	inputs.dst.checked = DST(year, month, day);

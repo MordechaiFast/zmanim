@@ -19,87 +19,88 @@ var shortMonthName = new Array('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','
 Math.toDegrees = Function("radians" , "{ return radians/(Math.PI/180);}");
 
 function getInput(){
-	month = Number(document.myform.month.value);
-	day = Number(document.myform.day.value);
-	year = Number(document.myform.year.value);
+	const gregorian = document.myform;
+	month = Number(gregorian.month.value);
+	day = Number(gregorian.day.value);
+	year = Number(gregorian.year.value);
 	
-	lat = Number(document.myform1.latitude.value);
-	long = Number(document.myform1.longitude.value);
-	
-	if (document.myform1.NorthSouth.selectedIndex==0) lat=Math.abs(lat);
-		else lat=-Math.abs(lat);
-	if (document.myform1.EastWest.selectedIndex==0) long=-Math.abs(long);
-		else  long=Math.abs(long);
+	const hebrew = document.hebrew;
+	hDay = Number(hebrew.day.value);
+	hMonth = Number(hebrew.month.value);
+	hYear = Number(hebrew.year.value);
 
+	jewish = document.myform.jewish.checked;
 	
-	timezone = Number(document.myform1.timezone.value);
+	const inputs = document.myform1;
+	lat = Number(inputs.latitude.value);
+	long = Number(inputs.longitude.value);
 	
-	hite = Number(document.myform1.hite.value);
+	if (inputs.NorthSouth.selectedIndex==0) lat=Math.abs(lat);
+		else lat=-Math.abs(lat);
+	if (inputs.EastWest.selectedIndex==0) long=-Math.abs(long);
+		else  long=Math.abs(long);
+	
+	timezone = Number(inputs.timezone.value);
+	dst = inputs.dst.checked;	
+	
+	hite = Number(inputs.hite.value);
 	//hite = Math.sqrt(hite) * 0.0348 ;
 	hite = Math.toDegrees(Math.acos(6371009 / (6371009 + hite)));
 	
+	showSeconds = inputs.seconds.checked;
+	AMPM = Number(inputs.ampm.value);
 	
+	with_refraction = inputs.refraction.checked;
 	
-	showSeconds = Number(document.myform1.seconds.checked);
+	pressure = Number(inputs.pressure.value);
+	//temp = 273.15 + Number(inputs.temp.value);
+	temp = 273 + Number(inputs.temp.value);
 	
-	jewish = Number(document.myform.jewish.checked);
+	nerot = Number(inputs.nerot.value);
 	
-	with_refraction = Number(document.myform1.refraction.checked)+0;
-	
-	pressure = Number(document.myform1.pressure.value);
-	//temp = 273.15 + Number(document.myform1.temp.value);
-	temp = 273 + Number(document.myform1.temp.value);
-	
-	nerot = Number(document.myform1.nerot.value);
-	dst = document.myform1.dst.checked;	
-	
-	alotDeg = Number(document.myform1.alotDeg.value);
-	misheyakirDeg = Number(document.myform1.misheyakirDeg.value);
-	tzeitDeg = Number(document.myform1.tzeitDeg.value);
-	graMga = document.myform1.GRA_MGA.value;
-	AMPM = Number(document.myform1.ampm.value);
+	alotDeg = Number(inputs.alotDeg.value);
+	misheyakirDeg = Number(inputs.misheyakirDeg.value);
+	tzeitDeg = Number(inputs.tzeitDeg.value);
+	graMga = inputs.GRA_MGA.value;
 	
 	if (diaspora != 2) {
-		diaspora = document.myform1.diaspora.checked;
+		diaspora = inputs.diaspora.checked;
 	} else {
-		if (!document.myform1.diaspora.checked) 
+		if (!inputs.diaspora.checked) 
 			diaspora = 0;
 	}
-	hDay = Number(document.hebrew.day.value);
-	hMonth = Number(document.hebrew.month.value);
-	hYear = Number(document.hebrew.year.value);
 }
 
 
 function calculate(){
 	getInput();
-	
+	const daily = document.myform1;
 	roundUp = true;
-	document.myform1.alot.value = hourAngleTwillight(108, 0);
-	document.myform1.misheyakir.value = hourAngleTwillight(101, 0);
-	document.myform1.hanetz.value = hourAngleTwillight(90 + (50.0/60.0) +hite, 0);
+	daily.alot.value = hourAngleTwillight(108, 0);
+	daily.misheyakir.value = hourAngleTwillight(101, 0);
+	daily.hanetz.value = hourAngleTwillight(90 + (50.0/60.0) +hite, 0);
 	roundUp = false;
-	document.myform1.shema.value = getAccurate(3, temporalToLocal(3));
-	document.myform1.tefillah.value = getAccurate(4, temporalToLocal(4));
-	document.myform1.chatzot.value = getAccurate(6, temporalToLocal(6));
+	daily.shema.value = getAccurate(3, temporalToLocal(3));
+	daily.tefillah.value = getAccurate(4, temporalToLocal(4));
+	daily.chatzot.value = getAccurate(6, temporalToLocal(6));
 	roundUp = true;
-	document.myform1.minchag.value = getAccurate(6.5, temporalToLocal(6.5));
-	document.myform1.minchak.value = getAccurate(9.5, temporalToLocal(9.5));
+	daily.minchag.value = getAccurate(6.5, temporalToLocal(6.5));
+	daily.minchak.value = getAccurate(9.5, temporalToLocal(9.5));
 	roundUp = false;
-	document.myform1.plag.value = getAccurate(10.75, temporalToLocal(10.75));
-	document.myform1.shkia.value = hourAngleTwillight(90 + (50.0/60.0) +hite, 12);
+	daily.plag.value = getAccurate(10.75, temporalToLocal(10.75));
+	daily.shkia.value = hourAngleTwillight(90 + (50.0/60.0) +hite, 12);
 	let dayOfWeek = DOW(day, month, year);
 	let erevMoad = erevMoadim(dayOfWeek, hMonth, hDay);
   	if(dayOfWeek == 6)
- 		document.myform1.shabbat.value = HoursMinutesSeconds(sun_time - (nerot/60))
+ 		daily.shabbat.value = HoursMinutesSeconds(sun_time - (nerot/60))
  	else if (erevMoad == 1) 
- 		document.myform1.shabbat.value = HoursMinutesSeconds(sun_time - (nerot/60)) + "*"
+ 		daily.shabbat.value = HoursMinutesSeconds(sun_time - (nerot/60)) + "*"
  	else
- 		document.myform1.shabbat.value = "";
+ 		daily.shabbat.value = "";
 	roundUp = true;
-	document.myform1.tzeit.value = hourAngleTwillight(96, 12);
+	daily.tzeit.value = hourAngleTwillight(96, 12);
 	if (erevMoad == 2)
-		document.myform1.shabbat.value = HoursMinutesSeconds(sun_time + (10/60)) + "*"; 
+		daily.shabbat.value = HoursMinutesSeconds(sun_time + (10/60)) + "*"; 
 }
 
 function table(what) {
@@ -194,7 +195,7 @@ var locName = getLocationName();
  + "</B><FONT COLOR=red size=-1>Latitude: "  + Math.abs(lat) +deg + ns 
  + "  Longitude: "  + Math.abs(long) +deg + ew 
  + "<BR>" + timezoneString 
- + ", "  + hite + " meters above sealevel";
+ + ", "  + document.myform1.hite.value + " meters above sealevel";
  
  if (with_refraction == 1){
  	text[0] += "<BR>refraction calculated for " + (temp - 273) + "&deg;C ," + pressure + " millibars (Air Pressure)";
@@ -668,7 +669,7 @@ var locName = getLocationName();
  + "<BR>" + timezoneString 
 
  if (what == "hanetz" || what == "shkia"){
-	text[0] += ", "  + hite + " meters above sealevel";
+	text[0] += ", "  + document.myform1.hite.value + " meters above sealevel";
  }
  if (with_refraction == 1 && what != "alot" && what != "misheyakir" && what != "hanetz" && what != "shkia" && what != "tzeit"  ){
 	text[0] += "<BR>refraction calculated for " + (temp - 273) + "&deg;C ," + pressure + " millibars (Air Pressure)";
@@ -928,7 +929,7 @@ function yearShabbat() {
 	+ "</B><FONT COLOR=red size=-1>Latitude: "  + Math.abs(lat) +deg + ns 
 	+ "  Longitude: "  + Math.abs(long) +deg + ew 
 	+ "<BR>" + timezoneString 
-	+ ", "  + hite + " meters above sealevel"
+	+ ", "  + document.myform1.hite.value + " meters above sealevel"
   	+ "<BR>Nerot:&nbsp;" + nerot + "&nbsp;minutes&nbsp;before&nbsp;shkia";
   
 	  if (with_refraction == 1){
