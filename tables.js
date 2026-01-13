@@ -6,7 +6,7 @@
 let month, day, year, hDay, hMonth, hYear, jewish,
 diaspora, nerot, hite, lat, long, timezone, dst, 
 alotDeg, misheyakirDeg, tzeitDeg, pressure, temp, 
-AMPM, showSeconds, graMga, with_refraction, roundUp, sun_time;
+AMPM, showSeconds, graMga, with_refraction;
 
 var strArray = new Array(31);
 //var strArray1 = new Array(1000);
@@ -15,8 +15,149 @@ var text = new Array(8);
 var monthName = new Array('January','February','March','April','May','June','July','August','September','October','November','December');
 var shortMonthName = new Array('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec');
 
+function twilightAngle(h, evening) {
+  const date = {year, month, day};
+  const location = {lat, long, timezone, dst};
+  return twilightTime(90-h, evening, date, location)
+}
 
-Math.toDegrees = Function("radians" , "{ return radians/(Math.PI/180);}");
+function temporalHour(hour) {
+  const date = {year, month, day};
+  const location = {lat, long, timezone, dst};
+  const atmospheric = {pressure, temp};
+  return (
+    (graMga == 'MGA')
+    ? ( with_refraction
+		? temporalHourR(hour, date, location, atmospheric, alotDeg)
+		: temporalHourD(hour, date, location, alotDeg) )
+    : ( with_refraction
+		? temporalHourR(hour, date, location, atmospheric)
+		: temporalHourS(hour, date, location) )
+  );
+}
+
+function HoursMinutesSeconds(time, roundUp=false) {
+	const frac = x => x - Math.floor(x);
+	
+	if (isNaN(time))
+		return " --:--";
+
+	let h = Math.floor(time);
+	let min = Math.floor(60 * frac(time));
+	let sec = Math.round(60 * frac(60 * frac(time)));
+	
+	if (sec == 60) {min += 1; sec = 0;}
+	if (min == 60) {h += 1; min = 0;}
+	
+	if (!showSeconds && roundUp) {
+		if (sec > 0) {
+			min++
+			if (min == 60){h += 1;	min = 0;}
+		}
+	}
+	
+	let timeFormat = "";
+	if (AMPM) {
+		if (h < 12)
+			timeFormat = " AM"
+		else {
+			if (h > 12)
+				h -= 12;
+			timeFormat = " PM";
+		}
+		if (AMPM == 2)
+			timeFormat = timeFormat.replace(" ", "&nbsp;");
+		if (h == 0)
+			h = 12;
+	}
+	
+	return ' ' + (AMPM ? h : h.toString().padStart(2, '0'))
+        + ':' + min.toString().padStart(2, '0')
+        + (showSeconds ? ':' + sec.toString().padStart(2, '0') : '')
+	    // + timeFormat;
+}
+
+function zmanOf(zman){
+	const roundUp = true;
+	const evening = true;
+	//hite = Math.sqrt(hite) * 0.0348 ;
+	let hight = Math.acos(6371009 / (6371009 + hite)) * 180 / Math.PI;
+	switch (zman) {
+		case "alot":
+			time = twilightAngle(108, 0);
+			return HoursMinutesSeconds(time, roundUp);
+		case "misheyakir":
+			time = twilightAngle(101, 0);
+			return HoursMinutesSeconds(time, roundUp);
+		case "hanetz":
+			time = twilightAngle(90 + (50.0/60.0) + hight, 0);
+			return HoursMinutesSeconds(time, roundUp);
+		case "shema":
+			time = temporalHour(3);
+			return HoursMinutesSeconds(time);
+		case "tefillah":
+			time = temporalHour(4);
+			return HoursMinutesSeconds(time);
+		case "chatzot":
+			time = temporalHour(6);
+			return HoursMinutesSeconds(time);
+		case "minchag":
+			time = temporalHour(6.5);
+			return HoursMinutesSeconds(time, roundUp);
+		case "minchak":
+			time = temporalHour(9.5);
+			return HoursMinutesSeconds(time, roundUp);
+		case "plag":
+			time = temporalHour(10.75);
+			return HoursMinutesSeconds(time);
+		case "shkia":
+			time = twilightAngle(90 + (50.0/60.0) + hight, evening);
+			return HoursMinutesSeconds(time);
+		case "tzeit":
+			time = twilightAngle(96, 12);
+			return HoursMinutesSeconds(time, roundUp);
+		case "shabbat":
+			sunset = twilightAngle(90 + (50.0/60.0) + hight, evening);
+			return HoursMinutesSeconds(sunset - (nerot/60));
+		case "motzai shabbat":
+			tzeit = twilightAngle(96, 12);
+			return HoursMinutesSeconds(tzeit + (10/60), roundUp);
+	}
+}
+
+function lookupTitle(zman){
+	switch (zman) {
+		case "alot":
+			return "עלות השחר";
+		case "misheyakir":
+			return "משיכיר";
+		case "hanetz":
+			return "הנץ החמה";
+		case "shema":
+			return "קריאת שמע";
+		case "tefillah":
+			return "תפילה";
+		case "chatzot":
+			return "חצות";
+		case "minchag":
+			return "מנחה גדולה";
+		case "minchak":
+			return "מנחה קטנה";
+		case "plag":
+			return "פלג המנחה";
+		case "shkia":
+			return "שקיעת החמה";
+		case "tzeit":
+			return "צאת הכוכבים";
+		case "shabbat":
+			return "הדלקת נרות";
+		case "parsha":
+			return "שבת ומועד";
+		case "molad":
+			return "מולד";
+	}
+}
+
 
 function getInput(){
 	const gregorian = document.myform;
@@ -44,8 +185,6 @@ function getInput(){
 	dst = inputs.dst.checked;	
 	
 	hite = Number(inputs.hite.value);
-	//hite = Math.sqrt(hite) * 0.0348 ;
-	hite = Math.toDegrees(Math.acos(6371009 / (6371009 + hite)));
 	
 	showSeconds = inputs.seconds.checked;
 	AMPM = Number(inputs.ampm.value);
@@ -75,35 +214,31 @@ function getInput(){
 function calculate(){
 	getInput();
 	const daily = document.myform1;
-	roundUp = true;
-	daily.alot.value = hourAngleTwillight(108, 0);
-	daily.misheyakir.value = hourAngleTwillight(101, 0);
-	daily.hanetz.value = hourAngleTwillight(90 + (50.0/60.0) +hite, 0);
-	roundUp = false;
-	daily.shema.value = getAccurate(3, temporalToLocal(3));
-	daily.tefillah.value = getAccurate(4, temporalToLocal(4));
-	daily.chatzot.value = getAccurate(6, temporalToLocal(6));
-	roundUp = true;
-	daily.minchag.value = getAccurate(6.5, temporalToLocal(6.5));
-	daily.minchak.value = getAccurate(9.5, temporalToLocal(9.5));
-	roundUp = false;
-	daily.plag.value = getAccurate(10.75, temporalToLocal(10.75));
-	daily.shkia.value = hourAngleTwillight(90 + (50.0/60.0) +hite, 12);
+	daily.alot.value = zmanOf("alot");
+	daily.misheyakir.value = zmanOf("misheyakir");
+	daily.hanetz.value = zmanOf("hanetz");
+	daily.shema.value = zmanOf("shema");
+	daily.tefillah.value = zmanOf("tefillah");
+	daily.chatzot.value = zmanOf("chatzot");
+	daily.minchag.value = zmanOf("minchag");
+	daily.minchak.value = zmanOf("minchak");
+	daily.plag.value = zmanOf("plag");
+	daily.shkia.value = zmanOf("shkia");
 	let dayOfWeek = DOW(day, month, year);
 	let erevMoad = erevMoadim(dayOfWeek, hMonth, hDay);
-  	if(dayOfWeek == 6)
- 		daily.shabbat.value = HoursMinutesSeconds(sun_time - (nerot/60))
- 	else if (erevMoad == 1) 
- 		daily.shabbat.value = HoursMinutesSeconds(sun_time - (nerot/60)) + "*"
- 	else
- 		daily.shabbat.value = "";
-	roundUp = true;
-	daily.tzeit.value = hourAngleTwillight(96, 12);
+	if (dayOfWeek == 6) {
+		daily.shabbat.value = zmanOf("shabbat");
+	} else if (erevMoad == 1) {
+		daily.shabbat.value = zmanOf("shabbat") + "*";
+	} else {
+		daily.shabbat.value = "";
+	}
+	daily.tzeit.value = zmanOf("tzeit");
 	if (erevMoad == 2)
-		daily.shabbat.value = HoursMinutesSeconds(sun_time + (10/60)) + "*"; 
+		daily.shabbat.value = zmanOf("motzai shabbat") + "*";
 }
 
-function table(what) {
+function table() {
 
 var truthBeTold = window.confirm("Do you wish to use DST automatically? OK for yes. Cancel for no.");
 if (truthBeTold) 
@@ -195,7 +330,7 @@ var locName = getLocationName();
  + "</B><FONT COLOR=red size=-1>Latitude: "  + Math.abs(lat) +deg + ns 
  + "  Longitude: "  + Math.abs(long) +deg + ew 
  + "<BR>" + timezoneString 
- + ", "  + document.myform1.hite.value + " meters above sealevel";
+ + ", "  + hite + " meters above sealevel";
  
  if (with_refraction == 1){
  	text[0] += "<BR>refraction calculated for " + (temp - 273) + "&deg;C ," + pressure + " millibars (Air Pressure)";
@@ -230,21 +365,17 @@ for (var i=1; i<=dIM; i++) {
 	
 	myDate.setHours(12);
 	
-	roundUp = true;
-	alot = hourAngleTwillight(108, 0);
-	misheyakir = hourAngleTwillight(101, 0);
-	hanetz = hourAngleTwillight(90 + (50.0/60.0) +hite, 0);
-	roundUp = false;
-	shema = getAccurate(3, temporalToLocal(3));
-	tefillah = getAccurate(4, temporalToLocal(4));
-	chatzot = getAccurate(6, temporalToLocal(6));
-	roundUp = true;
-	minchag = getAccurate(6.5, temporalToLocal(6.5));
-	minchak = getAccurate(9.5, temporalToLocal(9.5));
-	roundUp = false;
-	plag = getAccurate(10.75, temporalToLocal(10.75));
-	
-	shkia = hourAngleTwillight(90 + (50.0/60.0) +hite, 12); 
+	alot = zmanOf("alot");
+	misheyakir = zmanOf("misheyakir");
+	hanetz = zmanOf("hanetz");
+	shema = zmanOf("shema");
+	tefillah = zmanOf("tefillah");
+	chatzot = zmanOf("chatzot");
+	minchag = zmanOf("minchag");
+	minchak = zmanOf("minchak");
+	plag = zmanOf("plag");
+
+	shkia = zmanOf("shkia"); 
 	
 	var erevMoadim1 = ""
 	var myHebDay;
@@ -268,21 +399,20 @@ for (var i=1; i<=dIM; i++) {
 	
 	
 	if (myDate.getDay()== 5 ){
-		shabbat = "<B>" + HoursMinutesSeconds(sun_time - (nerot/60)) + "</B>" ;
+		shabbat = "<B>" + zmanOf("shabbat") + "</B>" ;
 	}
 	else if (erevMoadim1 == 1)
-		shabbat = "<B>" + HoursMinutesSeconds(sun_time - (nerot/60)) + "*</B>" ;
+		shabbat = "<B>" + zmanOf("shabbat") + "*</B>" ;
  	else { 
  		shabbat = "&nbsp;"
  	}
  	
  	
 	
-	roundUp = true;
-	tzeit = hourAngleTwillight(96, 12); 
+	tzeit = zmanOf("tzeit"); 
 	
 	if (erevMoadim1 == 2 && myDate.getDay()!= 5){
-		shabbat = "<B>" + HoursMinutesSeconds(sun_time + (10/60)) + "*</B>" ;
+		shabbat = "<B>" + zmanOf("motzai shabbat") + "*</B>" ;
 	}
 	
 	
@@ -428,7 +558,7 @@ for( var j = 0; j<3; j++){
 	 
 	 htmlText += "<TD bgcolor=#FFFFEE>"
 	 htmlText +="<P ALIGN=center><div class=hebrewTitle align=center>"
-	 htmlText += lookupTitle(whatTitle[j]);
+	 htmlText += hebrewTitle(whatTitle[j]);
 	 htmlText += "</div></TD>"
 }
 
@@ -488,77 +618,6 @@ for( var j = 0; j<3; j++){
 
   
 }
-
-
-function lookupWhat(what){
-
-var whatCalc="";
-switch (what) {
-	case  "alot" : roundUp = true;whatCalc = hourAngleTwillight(108, 0); break;
-	case  "misheyakir" : roundUp = true;whatCalc = hourAngleTwillight(101, 0); break;
-	case  "hanetz" : roundUp = true;whatCalc = hourAngleTwillight(90 + (50.0/60.0) +hite, 0); break;
-	case  "shema" : roundUp = false;whatCalc = getAccurate(3, temporalToLocal(3)); break;
-	case  "tefillah" : roundUp = false;whatCalc = getAccurate(4, temporalToLocal(4)); break;
-	case  "chatzot" : roundUp = false;whatCalc = getAccurate(6, temporalToLocal(6)); break;
-	case  "minchag" : roundUp = true;whatCalc = getAccurate(6.5, temporalToLocal(6.5)); break;
-	case  "minchak" : roundUp = true;whatCalc = getAccurate(9.5, temporalToLocal(9.5)); break;
-	case  "plag" : roundUp = false;whatCalc = getAccurate(10.75, temporalToLocal(10.75)); break;
-	case  "shkia" : roundUp = false;whatCalc = hourAngleTwillight(90 + (50.0/60.0) +hite, 12);  break;
-	case  "tzeit" : roundUp = true;whatCalc = hourAngleTwillight(96, 12);  break;
-	case  "shabbat" : roundUp = false; hourAngleTwillight(90 + (50.0/60.0) +hite, 12); whatCalc = HoursMinutesSeconds(sun_time - (18/60)) ;  break;
-
-}
-return whatCalc;
-
-
-}
-
-function lookupTitle(what){
-
-
-var whatCalc="";
-switch (what) {
-	
-	
-	case  "alot" : 			whatCalc="עלות השחר";break;
-	case  "misheyakir" : 		whatCalc="משיכיר";break;
-	case  "hanetz" : 		whatCalc="הנץ החמה";break;
-	case  "shema" : 		whatCalc="קריאת שמע";break;
-	case  "tefillah" : 		whatCalc="תפילה";break;
-	case  "chatzot" : 		whatCalc="חצות";break;
-	case  "minchag" : 		whatCalc="מנחה גדולה";break;
-	case  "minchak" : 		whatCalc="מנחה קטנה";break;
-	case  "plag" : 			whatCalc="פלג המנחה";break;
-	case  "shkia" : 		whatCalc="שקיעת החמה";break;
-	case  "tzeit" : 		whatCalc="צאת הכוכבים";break;
-	case  "shabbat" : 		whatCalc="הדלקת נרות";break;
-	case  "parsha" : 		whatCalc="שבת ומועד";break;
-	case  "molad" :			whatCalc="מולד";break;
-	/*
-	
-	case  "alot" : 			whatCalc="Dawn";break;
-	case  "misheyakir" : 		whatCalc="משיכיר";break;
-	case  "hanetz" : 		whatCalc="Sunise";break;
-	case  "shema" : 		whatCalc="The 3rd Hour";break;
-	case  "tefillah" : 		whatCalc="The 4th Hour";break;
-	case  "chatzot" : 		whatCalc="Midday";break;
-	case  "minchag" : 		whatCalc="6:30 temporal hour";break;
-	case  "minchak" : 		whatCalc="9:30 temporal hour";break;
-	case  "plag" : 			whatCalc="10:45 temporal hour";break;
-	case  "shkia" : 		whatCalc="Sunset";break;
-	case  "tzeit" : 		whatCalc="End of civil twilight";break;
-	case  "shabbat" : 		whatCalc="Sabbath Candle Lighting";break;
-	case  "parsha" : 		whatCalc="שבת ומועד";break;
-	case  "molad" :			whatCalc="מולד";break;
-	
-	*/
-
-}
-return whatCalc;
-
-
-}
-
 
 
 function yearTable(what) {
@@ -655,7 +714,7 @@ var locName = getLocationName();
  if (AMPM == 1) AMPM=2;
  
  //title
- text[0] = "<Center><FONT COLOR=black size=+1><B><span class=hebrewTitle align=center>" + lookupTitle(what) + " " 
+ text[0] = "<Center><FONT COLOR=black size=+1><B><span class=hebrewTitle align=center>" + hebrewTitle(what) + " " 
  
  if (numDays == 31)
   	text[0] += year  
@@ -669,7 +728,7 @@ var locName = getLocationName();
  + "<BR>" + timezoneString 
 
  if (what == "hanetz" || what == "shkia"){
-	text[0] += ", "  + document.myform1.hite.value + " meters above sealevel";
+	text[0] += ", "  + hite + " meters above sealevel";
  }
  if (with_refraction == 1 && what != "alot" && what != "misheyakir" && what != "hanetz" && what != "shkia" && what != "tzeit"  ){
 	text[0] += "<BR>refraction calculated for " + (temp - 273) + "&deg;C ," + pressure + " millibars (Air Pressure)";
@@ -705,7 +764,7 @@ var locName = getLocationName();
 
 
 			if (i<=dIM) {
-				strM1[month1][i]=lookupWhat(what);
+				strM1[month1][i]=zmanOf(what);
 
 				if (myDate.getDay()== 6){
 					strM1[month1][i]= "<B>" + strM1[month1][i] + "</B>";
@@ -929,7 +988,7 @@ function yearShabbat() {
 	+ "</B><FONT COLOR=red size=-1>Latitude: "  + Math.abs(lat) +deg + ns 
 	+ "  Longitude: "  + Math.abs(long) +deg + ew 
 	+ "<BR>" + timezoneString 
-	+ ", "  + document.myform1.hite.value + " meters above sealevel"
+	+ ", "  + hite + " meters above sealevel"
   	+ "<BR>Nerot:&nbsp;" + nerot + "&nbsp;minutes&nbsp;before&nbsp;shkia";
   
 	  if (with_refraction == 1){
@@ -1026,9 +1085,7 @@ for( ; Date.parse(myDate) < Date.parse(myEndDate); myDate = new Date(Date.parse(
 	
 	myDate.setHours(12);
 	
-	roundUp = false;
-	
-	shkia = hourAngleTwillight(90 + (50.0/60.0) +hite, 12); 
+	shkia = zmanOf("shkia"); 
 	
 	var erevMoadim1 = ""
 	var myHebDay;
@@ -1052,8 +1109,7 @@ for( ; Date.parse(myDate) < Date.parse(myEndDate); myDate = new Date(Date.parse(
 		month = myDate.getUTCMonth()+1;
 		year =  myDate.getUTCFullYear();
 		day = myDate.getUTCDate();
-		shkia = hourAngleTwillight(90 + (50.0/60.0) +hite, 12); 
-		shabbat = "<B>" + HoursMinutesSeconds(sun_time - (nerot/60)) + "</B>" ;
+		shabbat = "<B>" + zmanOf("shabbat") + "</B>" ;
 		myDate = new Date(Date.parse(myDate) + (86400000));
 		month = myDate.getUTCMonth()+1;
 		year =  myDate.getUTCFullYear();
@@ -1066,8 +1122,7 @@ for( ; Date.parse(myDate) < Date.parse(myEndDate); myDate = new Date(Date.parse(
  	
  	
 	
-	roundUp = true;
-	tzeit = hourAngleTwillight(96, 12); 
+	tzeit = zmanOf("tzeit"); 
 	
 	
 	
@@ -1097,15 +1152,13 @@ for( ; Date.parse(myDate) < Date.parse(myEndDate); myDate = new Date(Date.parse(
 		if (erevMoadim1 != ""){
 			
 			
-			roundUp = false;
-			shkia = hourAngleTwillight(90 + (50.0/60.0) +hite, 12); 
+			shkia = zmanOf("shkia"); 
 
 			if (erevMoadim1 == 1)
-				shabbat = "<B>" + HoursMinutesSeconds(sun_time - (nerot/60)) + "*</B>" ;
+				shabbat = "<B>" + zmanOf("shabbat") + "*</B>" ;
 			else if (erevMoadim1 == 2 && myDate.getDay()!= 5){
-				roundUp = true;
-				tzeit = hourAngleTwillight(96, 12); 
-				shabbat = "<B>" + HoursMinutesSeconds(sun_time + (10/60)) + "*</B>" ;
+				tzeit = zmanOf("tzeit");
+				shabbat = "<B>" + zmanOf("motzai shabbat") + "*</B>" ;
 			}
 
 			
@@ -1116,10 +1169,8 @@ for( ; Date.parse(myDate) < Date.parse(myEndDate); myDate = new Date(Date.parse(
 		month = myDate.getUTCMonth()+1;
 		year =  myDate.getUTCFullYear();
 		day = myDate.getUTCDate();
-		roundUp = false;
-		shkia = hourAngleTwillight(90 + (50.0/60.0) +hite, 12); 
-		roundUp = true;
-		tzeit = hourAngleTwillight(96, 12); 
+		shkia = zmanOf("shkia");
+		tzeit = zmanOf("tzeit");
 			
 	}
 	
@@ -1171,7 +1222,7 @@ for( ; Date.parse(myDate) < Date.parse(myEndDate); myDate = new Date(Date.parse(
 			
 			htmlText += "<TD bgcolor=#FFFFEE WIDTH=250>"
 			htmlText +="<P ALIGN=center><div class=hebrewTitle align=center>"
-			htmlText += lookupTitle("parsha");
+			htmlText += hebrewTitle("parsha");
 			htmlText += "</div></TD>"
 
 			htmlText += "<TD bgcolor=#FFFFEE WIDTH=90>"
