@@ -84,10 +84,10 @@ function zmanOf(zman){
 	let hight = Math.acos(6371009 / (6371009 + hite)) * 180 / Math.PI;
 	switch (zman) {
 		case "alot":
-			time = twilightAngle(108, 0);
+			time = twilightAngle(90 + alotDeg, 0);
 			return HoursMinutesSeconds(time, roundUp);
 		case "misheyakir":
-			time = twilightAngle(101, 0);
+			time = twilightAngle(90 + misheyakirDeg, 0);
 			return HoursMinutesSeconds(time, roundUp);
 		case "hanetz":
 			time = twilightAngle(90 + (50.0/60.0) + hight, 0);
@@ -114,13 +114,13 @@ function zmanOf(zman){
 			time = twilightAngle(90 + (50.0/60.0) + hight, evening);
 			return HoursMinutesSeconds(time);
 		case "tzeit":
-			time = twilightAngle(96, 12);
+			time = twilightAngle(90 + tzeitDeg, 12);
 			return HoursMinutesSeconds(time, roundUp);
 		case "shabbat":
 			sunset = twilightAngle(90 + (50.0/60.0) + hight, evening);
 			return HoursMinutesSeconds(sunset - (nerot/60));
 		case "motzai shabbat":
-			tzeit = twilightAngle(96, 12);
+			tzeit = twilightAngle(90 + tzeitDeg, 12);
 			return HoursMinutesSeconds(tzeit + (10/60), roundUp);
 	}
 }
@@ -235,7 +235,7 @@ function calculate(){
 	}
 	daily.tzeit.value = zmanOf("tzeit");
 	if (erevMoad == 2)
-		daily.shabbat.value = zmanOf("motzai shabbat") + "*";
+		daily.shabbat.value = "*" + zmanOf("motzai shabbat") + "*";
 }
 
 function table() {
