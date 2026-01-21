@@ -219,43 +219,23 @@ color: black;
 
 <BR>
 	<center>זמנים של היום</center>
-<center><table BORDER=0 CELLPADDING=2 >
-<tr>
+<center><table BORDER=0 CELLPADDING=2 dir="rtl">
+<tr id="daily-table-row">
 <td VALIGN=TOP>
 <table BORDER=0 >
 <script>
-
-var whatTitle = new Array("plag", "shabbat", "shkia", "tzeit",  "tefillah", "chatzot", "minchag", "minchak",  "alot", "misheyakir", "hanetz", "shema" )
-
-for (var i = 0; i < whatTitle.length; i++){
-
-var str = ""
-
-	if (i == 23){
-	//if (i == 3){
-		str +="<tr>"
-		str += "<td ALIGN=CENTER>&nbsp;</td>"
-		str += "<td ALIGN=CENTER ></td>"
-		str += "</tr>"
-
+for (var i = 0; i < zmanimIDs.length; i++){
+	var str = ""
+	if (i == 4 || i == 8){
+		str += "</table></td><td VALIGN=TOP><table BORDER=0 >"
 	}
-	else {
-		if (i == 4 || i == 8){
-			str += "</table></td><td VALIGN=TOP><table BORDER=0 >"
-		}
-
-		str +="<tr>"
-		str += "<td ALIGN=CENTER><input type='text' size='9' maxlength='80' onFocus='this.blur()' onClick='this.blur()' name='" + whatTitle[i] + "'></td>"
-		str += "<td ALIGN=CENTER class=btn1 dir=rtl>" + lookupTitle(whatTitle[i]) + "</td>"
-		str += "</tr>"
-	}
+	str +="<tr>"
+	str += "<td ALIGN=CENTER class=btn1 dir=rtl>" + lookupTitle(zmanimIDs[i]) + "</td>"
+	str += "<td ALIGN=CENTER><input type='text' size='9' maxlength='80' onFocus='this.blur()' onClick='this.blur()' name='" + zmanimIDs[i] + "'></td>"
+	str += "</tr>"
 	document.write(str)
 }
-
 </script>
-
-
-
 </table>
 </td>
 </tr>
@@ -265,11 +245,8 @@ var str = ""
 <select class="btn" dir =rtl NAME="select" onchange="if(form.select.options[form.select.selectedIndex].value!=''){yearTable(form.select.options[form.select.selectedIndex].value)}">
 <option VALUE="" Selected >לוח זמנים לכל השנה
 <script>
-
-var whatTitle = new Array("alot", "misheyakir", "hanetz", "shema", "tefillah", "chatzot", "minchag", "minchak", "plag", "shkia", "tzeit", "shabbat")
-
-for (var i = 0; i < whatTitle.length; i++){
-	document.write("<option VALUE='" + whatTitle[i] + "'>" + lookupTitle(whatTitle[i]) + "</option>")
+for (var i = 0; i < zmanimIDs.length; i++){
+	document.write("<option VALUE='" + zmanimIDs[i] + "'>" + lookupTitle(zmanimIDs[i]) + "</option>")
 }
 
 </script>

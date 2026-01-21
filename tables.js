@@ -158,6 +158,42 @@ function lookupTitle(zman){
 	}
 }
 
+const zmanimIDs = [
+	"alot", "misheyakir", "hanetz", "shema",
+	"tefillah", "chatzot", "minchag", "minchak",
+	"plag", "shkia", "tzeit", "shabbat",
+];
+
+function buildDailyTable(cols=3) {
+	const tableRow = document.getElementById("daily-table-row");
+	const perCol = Math.ceil(zmanimIDs.length / cols);
+	for(let col=0; col<cols; col++) {
+		const td = document.createElement("td");
+		td.setAttribute("VALIGN", "TOP");
+		const innerTable = document.createElement("table");
+		innerTable.setAttribute("BORDER", "0");
+		const end = Math.min((col+1)*perCol, zmanimIDs.length);
+		for (let i = col*perCol; i < end; i++) {
+			const tr = document.createElement("tr");
+			const tdTitle = document.createElement("td");
+			tdTitle.innerHTML = lookupTitle(zmanimIDs[i]);
+			tr.appendChild(tdTitle);
+			const tdInput = document.createElement("td");
+			const input = document.createElement("input");
+			input.type = "text";
+			input.size = 9;
+			input.maxLength = 80;
+			input.readOnly = true;
+			input.name = zmanimIDs[i];
+			tdInput.appendChild(input);
+			tr.appendChild(tdInput);
+			innerTable.appendChild(tr);
+		}
+		td.appendChild(innerTable);
+		tableRow.appendChild(td);
+	}
+}
+
 
 function getInput(){
 	const gregorian = document.myform;
@@ -620,22 +656,18 @@ for( var j = 0; j<3; j++){
 }
 
 
-function yearTable(what) {
-
-if (what == "shabbat"){
-	yearShabbat();
+function yearTable(zman) {
+if(zman == "")
+	return;
+if(zman == "shabbat"){
+	return yearShabbat();
 }
-else {
-
-
-
-//yearTable('shema')
 
 var deg = String.fromCharCode(176);
 
 getInput();
 
-if (what == "molad"){
+if (zman == "molad"){
 	var a = window.open("molad.asp?year="+hYear)
 }
 else {   
@@ -714,7 +746,7 @@ var locName = getLocationName();
  if (AMPM == 1) AMPM=2;
  
  //title
- text[0] = "<Center><FONT COLOR=black size=+1><B><span class=hebrewTitle align=center>" + hebrewTitle(what) + " " 
+ text[0] = "<Center><FONT COLOR=black size=+1><B><span class=hebrewTitle align=center>" + hebrewTitle(zman) + " " 
  
  if (numDays == 31)
   	text[0] += year  
@@ -727,10 +759,10 @@ var locName = getLocationName();
  + "  Longitude: "  + Math.abs(long) +deg + ew 
  + "<BR>" + timezoneString 
 
- if (what == "hanetz" || what == "shkia"){
+ if (zman == "hanetz" || zman == "shkia"){
 	text[0] += ", "  + hite + " meters above sealevel";
  }
- if (with_refraction == 1 && what != "alot" && what != "misheyakir" && what != "hanetz" && what != "shkia" && what != "tzeit"  ){
+ if (with_refraction == 1 && zman != "alot" && zman != "misheyakir" && zman != "hanetz" && zman != "shkia" && zman != "tzeit"  ){
 	text[0] += "<BR>refraction calculated for " + (temp - 273) + "&deg;C ," + pressure + " millibars (Air Pressure)";
  }
 
@@ -764,7 +796,7 @@ var locName = getLocationName();
 
 
 			if (i<=dIM) {
-				strM1[month1][i]=zmanOf(what);
+				strM1[month1][i]=zmanOf(zman);
 
 				if (myDate.getDay()== 6){
 					strM1[month1][i]= "<B>" + strM1[month1][i] + "</B>";
@@ -796,7 +828,6 @@ var locName = getLocationName();
  }
 }
 
-}
 
 function writeYearPage(strArray, numMonths, numDays) {
  if (numDays == 31){
