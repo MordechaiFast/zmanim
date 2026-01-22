@@ -1,46 +1,24 @@
-function showdate() {
-  var i = document.myform.month.selectedIndex;
-  var j = document.myform.day.selectedIndex;
-  var k = document.myform.year.selectedIndex;
-  return (document.myform.month.options[i].value + "/" +
-        document.myform.day.options[j].value + "/" +
-        document.myform.year.options[k].value)
-}
-
-
 function setDate(){
-	const gregorian = document.myform;
 	const mydate = new Date();
-	gregorian.month.value = mydate.getMonth() + 1;
-	gregorian.day.value = mydate.getDate();
-	gregorian.year.value = mydate.getFullYear();
-	updateGregorian();
+	setGregorian(mydate);
 	updateFromGregorian();
 }
 
-function updateGregorian() {
-    // Read Gregorian date
-	const gregorian = document.myform;
-    const day = Number(gregorian.day.value);
-    const month = Number(gregorian.month.value);
-    const year = Number(gregorian.year.value);
-	// update day list
-	const days = daysInM(month, year);
-    gregorian.day.options.length = 0;
-    for (let d = 1; d <= days; d++)
-        gregorian.day.options.add(new Option(d, d));
-    gregorian.day.value = day;
-    if (gregorian.day.selectedIndex == -1)
-        gregorian.day.selectedIndex = 0;
+function setGregorian(mydate){
+	const gregorian = document.querySelector('input[name="gregorian"]');
+	gregorian.value = mydate.toISOString().slice(0, 10);
+}
+
+function readGregorian(){
+	const gregorian = document.querySelector('input[name="gregorian"]');
+	year = Number(gregorian.value.slice(0, 4));
+	month = Number(gregorian.value.slice(5, 7));
+	day = Number(gregorian.value.slice(8, 10));
 }
 
 
 function updateFromGregorian() {	// Update hebrew calendar from Gregorian
-	// Read Gregorian date
-	const gregorian = document.myform;
-	const year = Number(gregorian.year.value);
-    const month = Number(gregorian.month.value);
-    const day = Number(gregorian.day.value);
+	readGregorian();
 	// Set Hebrew date
 	const hebrew = document.hebrew;
     const jd = gregorian_to_jd(year, month, day)
@@ -134,22 +112,14 @@ function updateFromHebrew() {	// Update Gergoran calendar from Hebrew
 	const hMonth = Number(hebrew.month.value);
 	const hDay = Number(hebrew.day.value);
 	// Set Gregorian date
-	const gregorian = document.myform;
     const jd = hebrew_to_jd(hYear, hMonth, hDay);
     const [year, month, day] = jd_to_gregorian(jd);
-	gregorian.year.value = year;
-	gregorian.month.value = month;
-	gregorian.day.value = day;
-	updateGregorian();
+	setGregorian(new Date(`${year}-${month}-${day}`));
 }
 
 
 function checkDST(){
-	const gregorian = document.myform;
-	month = Number(gregorian.month.value);
-	day = Number(gregorian.day.value);
-	year = Number(gregorian.year.value);
-	
+	readGregorian();	
 	const inputs = document.myform1;
 	inputs.dst.checked = DST(year, month, day);
 }

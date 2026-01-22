@@ -76,28 +76,7 @@ color: black;
 <td>
 <center>
 
-<select NAME="month" onChange="updateGregorian();updateFromGregorian();checkDST();calculate();">
-	<option VALUE="1">January&nbsp;<option VALUE="2">February&nbsp;<option VALUE="3">March&nbsp;<option VALUE="4">April&nbsp;<option VALUE="5">May&nbsp;<option VALUE="6">June&nbsp;<option VALUE="7">July&nbsp;<option VALUE="8">August&nbsp;<option VALUE="9">September&nbsp;<option VALUE="10">October&nbsp;<option VALUE="11">November&nbsp;<option VALUE="12">December&nbsp;
-</select>
-
-&nbsp;
-<select NAME="day" onChange="updateFromGregorian();checkDST();calculate();">
-
-<script>
-	for(let day = 1; day <= 31; day++)
-		this.myform.day.add(new Option(day, day));
-</script>
-</select>&nbsp;
-
-<select NAME="year" onChange="updateGregorian();updateFromGregorian();checkDST();calculate();">
-	<script>
-		let thisYear = new Date().getFullYear();
-		for (let year = thisYear - 20; year < thisYear + 10; year++)
-			this.myform.year.add(new Option(year, year));
-	</script>
-</select>
-&nbsp;
-<input TYPE=BUTTON NAME=putcalbutton VALUE="&nbsp;?&nbsp;"  onclick="putcal(this.form.month.options[this.form.month.selectedIndex].value,this.form.year.options[this.form.year.selectedIndex].value);">
+<input type="date" name="gregorian" onChange="updateFromGregorian();checkDST();calculate();"/>
 &nbsp;
 
 </center>

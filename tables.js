@@ -196,10 +196,7 @@ function buildDailyTable(cols=3) {
 
 
 function getInput(){
-	const gregorian = document.myform;
-	month = Number(gregorian.month.value);
-	day = Number(gregorian.day.value);
-	year = Number(gregorian.year.value);
+	readGregorian();
 	
 	const hebrew = document.hebrew;
 	hDay = Number(hebrew.day.value);
