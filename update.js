@@ -1,12 +1,26 @@
 function setDate(){
-	const mydate = new Date();
-	setGregorian(mydate);
+	const today = new Date();
+	const date = today.toISOString().slice(0, 10);
+	[year, month, day] = date.split('-')
+	setGregorian();
 	updateFromGregorian();
 }
 
-function setGregorian(mydate){
+function updateFromHebrew() {	// Update Gergoran calendar from Hebrew
+	// Read Hebrew date
+    const hebrew = document.hebrew;
+	const hYear = Number(hebrew.year.value);
+	const hMonth = Number(hebrew.month.value);
+	const hDay = Number(hebrew.day.value);
+	// Set Gregorian date
+    const jd = hebrew_to_jd(hYear, hMonth, hDay);
+    [year, month, day] = jd_to_gregorian(jd);
+	setGregorian();
+}
+
+function setGregorian(){
 	const gregorian = document.querySelector('input[name="gregorian"]');
-	gregorian.value = mydate.toISOString().slice(0, 10);
+	gregorian.value = `${year}-${month}-${day}`;
 }
 
 function readGregorian(){
@@ -105,18 +119,6 @@ function yearDescription(hYear) {
 		return "Invalid year length: " + hebrew_year_days(hYear) + " days.";
 }
 
-function updateFromHebrew() {	// Update Gergoran calendar from Hebrew
-	// Read Hebrew date
-    const hebrew = document.hebrew;
-	const hYear = Number(hebrew.year.value);
-	const hMonth = Number(hebrew.month.value);
-	const hDay = Number(hebrew.day.value);
-	// Set Gregorian date
-    const jd = hebrew_to_jd(hYear, hMonth, hDay);
-    const [year, month, day] = jd_to_gregorian(jd);
-	setGregorian(new Date(`${year}-${month}-${day}`));
-}
-
 
 function checkDST(){
 	readGregorian();	
@@ -159,7 +161,8 @@ function DST(year, month, day) {
 }
 
 
-
+// TODO: 1)Have erevMoadim accept (hday, hmonth, hyear) and calculate the day of week internally.
+//       2)Return one value flag for Erev Shabbos, a second for Erev Yom Tov, and a third for Motzai Shabbos. 
 function erevMoadim(dow, hmonth, hday) {
 	if(hmonth == 6) {
 		if(hday == 29)
