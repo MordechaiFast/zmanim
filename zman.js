@@ -308,8 +308,8 @@ function temporalHourR(hour, date, location, atmospheric, dawnElevation=0) {
     let {declination, equationOfTime} = SunPosition(current);
     let hourAngle = (current % 1 * 360) + equationOfTime - location.long;
     // Correct for refraction
-    let azimuth = calcAzimuth(latitude, hourAngle, declination);
-    let altitude = calcAltitude(latitude, hourAngle, declination);
+    let azimuth = calcAzimuth(location.lat, hourAngle, declination);
+    let altitude = calcAltitude(location.lat, hourAngle, declination);
     let refraction = calcRefraction(altitude, atmospheric.pressure, atmospheric.temp);
     altitude += refraction;
     // Evaluate apparent hour angle and declination
