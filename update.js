@@ -1,26 +1,15 @@
 function setDate(){
 	const today = new Date();
-	const date = today.toISOString().slice(0, 10);
-	[year, month, day] = date.split('-')
-	setGregorian();
+	const year = today.getFullYear();
+	const month = today.getMonth() + 1;
+	const day = today.getDate();
+	setGregorian(year, month, day);
 	updateFromGregorian();
 }
 
-function updateFromHebrew() {	// Update Gergoran calendar from Hebrew
-	// Read Hebrew date
-    const hebrew = document.hebrew;
-	const hYear = Number(hebrew.year.value);
-	const hMonth = Number(hebrew.month.value);
-	const hDay = Number(hebrew.day.value);
-	// Set Gregorian date
-    const jd = hebrew_to_jd(hYear, hMonth, hDay);
-    [year, month, day] = jd_to_gregorian(jd);
-	setGregorian();
-}
-
-function setGregorian(){
+function setGregorian(year, month, day){
 	const gregorian = document.querySelector('input[name="gregorian"]');
-	gregorian.value = `${year}-${month}-${day}`;
+	gregorian.value = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 }
 
 function readGregorian(){
@@ -73,7 +62,8 @@ function updateHebrew() {
     hebrew.month.value = hMonth;
     hebrew.day.value = hDay;
     if (hebrew.day.selectedIndex == -1)
-        hebrew.day.selectedIndex = 0;}
+        hebrew.day.selectedIndex = 0;
+}
 
 function updateHebrewDescription() {
 	// Read Hebrew date
@@ -117,6 +107,18 @@ function yearDescription(hYear) {
 		return "שנה מלאה מעוברת (385 ימים)"
     else
 		return "Invalid year length: " + hebrew_year_days(hYear) + " days.";
+}
+
+function updateFromHebrew() {	// Update Gergoran calendar from Hebrew
+	// Read Hebrew date
+    const hebrew = document.hebrew;
+	const hYear = Number(hebrew.year.value);
+	const hMonth = Number(hebrew.month.value);
+	const hDay = Number(hebrew.day.value);
+	// Set Gregorian date
+    const jd = hebrew_to_jd(hYear, hMonth, hDay);
+    const [year, month, day] = jd_to_gregorian(jd);
+	setGregorian(year, month, day);
 }
 
 

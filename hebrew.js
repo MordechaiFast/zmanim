@@ -117,12 +117,12 @@ function hebrew_delay_1(year)
 
     months = Math.floor(((235 * year) - 234) / 19);
     parts = 12084 + (13753 * months);
-    day = (months * 29) + Math.floor(parts / 25920);
+    days = (months * 29) + Math.floor(parts / 25920);
 
-    if (mod((3 * (day + 1)), 7) < 3) {
-        day++;
+    if (mod((3 * (days + 1)), 7) < 3) {
+        days++;
     }
-    return day;
+    return days;
 }
 
 //  Check for delay in start of new year due to length of adjacent years

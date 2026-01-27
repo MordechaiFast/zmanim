@@ -32,7 +32,7 @@ function hebrewCalendarElapsedDays(year) {
                    Math.floor(partsElapsed / 1080));
 
   /* Conjunction day */
-  day = 1 + (29 * monthsElapsed) + Math.floor(hoursElapsed/24);
+  let day = 1 + (29 * monthsElapsed) + Math.floor(hoursElapsed/24);
 
   /* Conjunction parts */
   parts = ((hoursElapsed % 24) * 1080) +
