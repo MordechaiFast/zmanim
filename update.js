@@ -163,40 +163,31 @@ function DST(year, month, day) {
 }
 
 
-// TODO: 1)Have erevMoadim accept (hday, hmonth, hyear) and calculate the day of week internally.
-//       2)Return one value flag for Erev Shabbos, a second for Erev Yom Tov, and a third for Motzai Shabbos. 
-function erevMoadim(dow, hmonth, hday) {
-	if(hmonth == 6) {
-		if(hday == 29)
-			return 1
-	}
-	else if(hmonth == 7) {
-		if(hday == 9 || hday == 0 || ((hday == 14  || hday == 21 ) && dow != 7)){
-			return 1
-		}
-		if (hday== 1 || ((hday == 14  || hday == 21 ) && dow == 7) || ((hday == 15 || hday == 22) && diaspora)){
-			return 2
-		}
-		
-	}
+function erevMoadim(hday, hmonth, hyear) {
+	const dow = (hebrew_to_jd(hyear, hmonth, hday) + 1.5) % 7 + 1;
 	
-	else if(hmonth == 1) {
-		if((hday == 14  || hday == 20 ) && dow != 7)
-			return 1
-		else if (((hday == 14  || hday == 20 ) && dow == 7) || ((hday == 15 || hday == 21) && diaspora))
-			return 2
-		
-	}
-	
-	else if(hmonth == 3) {
+	if(dow == 6)
+		return 1;
+	if(hmonth == 1) {
+		if((hday == 14 || hday == 20) && dow != 7)
+			return 2;
+		else if (((hday == 14 || hday == 20) && dow == 7) || ((hday == 15 || hday == 21) && diaspora))
+			return 3;
+	} else if(hmonth == 3) {
 		if(hday == 5 && dow != 7)
-			return 1
+			return 2;
 		else if((hday == 5 && dow == 7) || (hday == 6 && diaspora))
-			return 2
+			return 3;
+	} else if(hmonth == 6) {
+		if(hday == 29)
+			return 2;
+	} else if(hmonth == 7) {
+		if(hday == 9 || ((hday == 14 || hday == 21) && dow != 7))
+			return 2;
+		if(hday == 1 || ((hday == 14 || hday == 21) && dow == 7) || ((hday == 15 || hday == 22) && diaspora))
+			return 3;
 	}
-	
-	
-	return "";
+	return 0;
 }
 
 

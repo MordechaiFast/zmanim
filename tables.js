@@ -257,18 +257,17 @@ function calculate(){
 	daily.minchak.value = zmanOf("minchak");
 	daily.plag.value = zmanOf("plag");
 	daily.shkia.value = zmanOf("shkia");
-	let dayOfWeek = DOW(day, month, year);
-	let erevMoad = erevMoadim(dayOfWeek, hMonth, hDay);
-	if (dayOfWeek == 6) {
+	const erevMoad = erevMoadim(hDay, hMonth, hYear);
+	if (erevMoad == 1) {
 		daily.shabbat.value = zmanOf("shabbat");
-	} else if (erevMoad == 1) {
+	} else if (erevMoad == 2) {
 		daily.shabbat.value = zmanOf("shabbat") + "*";
+	} else if (erevMoad == 3) {
+		daily.shabbat.value = "*" + zmanOf("motzai shabbat") + "*";
 	} else {
 		daily.shabbat.value = "";
 	}
 	daily.tzeit.value = zmanOf("tzeit");
-	if (erevMoad == 2)
-		daily.shabbat.value = "*" + zmanOf("motzai shabbat") + "*";
 }
 
 function table() {
@@ -343,24 +342,25 @@ function table() {
 	const minchak = zmanOf("minchak");
 	const plag = zmanOf("plag");
 	const shkia = zmanOf("shkia"); 
-	const erevMoad = erevMoadim(myDate.getDay()+1, hMonth, hDay);
+	const erevMoad = erevMoadim(hDay, hMonth, hYear);
 	let shabbat;
-	if (myDate.getDay()== 5 )
+	if (erevMoad == 1)
 		shabbat = "<B>" + zmanOf("shabbat") + "</B>"
-	else if (erevMoad == 1)
-		shabbat = "<B>" + zmanOf("shabbat") + "*</B>"
 	else if (erevMoad == 2)
-		shabbat = "<B>" + zmanOf("motzai shabbat") + "*</B>"
+		shabbat = "<B>" + zmanOf("shabbat") + "*</B>"
+	else if (erevMoad == 3)
+		shabbat = "<B>*" + zmanOf("motzai shabbat") + "*</B>"
 	else
 		shabbat = "&nbsp;";
     const tzeit = zmanOf("tzeit"); 
 	
-	const torahReading = myDate.getDay() == 6
-    	? `</B><span class=hebrewBody align=center>${getTorahSections(hDay, hMonth, hYear)}</span><B>`
+	let torahReading = getTorahSections(hDay, hMonth, hYear);
+	torahReading = torahReading
+    	? `</B><span class=hebrewBody align=center>${torahReading}</span><B>`
     	: "&nbsp;";
 	
 	let myMoed = moadim(hDay, hMonth, hYear);
-	myMoed = myMoed !== ""
+	myMoed = myMoed
 		? `</B><span class=hebrewBody align=center>${myMoed}</span><B>`
 		: "&nbsp;";
 	myMoed = torahReading !== "&nbsp;" ? `${torahReading} ${myMoed}` : myMoed;
@@ -394,123 +394,133 @@ function table() {
 }
 
 function writeMonthPage(title, myMonth, strArray, dIM) {
-  var htmlText="";
-  htmlText += "<html><head>"
-  htmlText += "<title>Monthly Zmanim</title>"
-  htmlText += "<STYLE TYPE='text/css' media='screen'>P,TR,TD{font-size: 12px;font-family:verdana , arial, helvetica, sans-serif;color: black;}SPAN{font-size: 15px;font-family:Times New Roman,  serif;color: black;}.hebrewTitle {cursor:hand;font-family:david,times new roman,serif;font-weight:normal;font-size:150%;color:#000000;}</STYLE>"  
-  htmlText += "<STYLE TYPE='text/css' media='print'>P,TR,TD{font-size: 10px;font-family:verdana , arial, helvetica, sans-serif;color: black;}SPAN{font-size: 13px;font-family:Times New Roman,  serif;color: black;}.hebrewTitle {cursor:hand;font-family:david,times new roman,serif;font-weight:normal;font-size:120%;color:#000000;}</STYLE>"  
-  //htmlText += "<STYLE TYPE='text/css' media='print'> DIV.page {	MARGIN: 10% 0%; WRITING-MODE: tb-rl; HEIGHT: 80% } DIV.page TABLE { FILTER: progid:DXImageTransform.Microsoft.BasicImage(Rotation=1); MARGIN-RIGHT: 50pt }</STYLE>"
-  htmlText += "</head>"
+	const zmanim = ["parsha", "alot", "misheyakir",
+		"hanetz", "shema", "tefillah", "chatzot",
+		"minchag", "minchak", "plag", "shabbat",
+		"shkia", "tzeit"];
 
-  htmlText += "<body BGCOLOR=#FFFFFF TEXT=#000000 LINK=#0000FF VLINK=#663399 ALINK=#FF0000>"
-
-  htmlText += "<div class=page align=\"center\"><center>"
-
-  htmlText += "<TABLE width=700 border=1 cellpadding=1 cellspacing=0 bordercolor=Black>"
-
-  htmlText += "<TR>"
-  htmlText += "<TD COLSPAN=16>"
-  htmlText += title 
-  htmlText += "</TD>"
-  htmlText += "</TR>"
-
- 
-htmlText += "<TR>"
- htmlText += "<TD>"
-   htmlText +="<P ALIGN=center><FONT COLOR=red size=-5>©&nbsp;N.&nbsp;Kaplan&nbsp;&nbsp;</FONT>"
-   htmlText +="&nbsp;";
-   htmlText += "</TD>"	
-  
-  
-for( var j = 0; j<11; j++){
-  htmlText += "<TD >"
-  htmlText +="<P ALIGN=center>"
-  htmlText +="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-  htmlText += "</TD>"
-}
-
-  htmlText += "<TD >"
-  htmlText +="<P ALIGN=center>"
-  htmlText +="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-  htmlText += "</TD>"
-
-for( var j = 0; j<3; j++){  
-  htmlText += "<TD>"
-  htmlText +="<P ALIGN=center>"
-  htmlText +="&nbsp;";
-  htmlText += "</TD>"	
-}  
-  htmlText += "</TR>"	
-  
-  
- htmlText += "<TR>"
- 
- var whatTitle = new Array("parsha","alot", "misheyakir", "hanetz", "shema", "tefillah", "chatzot", "minchag", "minchak", "plag", "shabbat", "shkia", "tzeit")
-
- 
- for( var j = 12; j>=0; j--){
-	 
-	 htmlText += "<TD bgcolor=#FFFFEE>"
-	 htmlText +="<P ALIGN=center><div class=hebrewTitle align=center>"
-	 htmlText += lookupTitle(whatTitle[j]);
-	 htmlText += "</div></TD>"
-}
-
-	htmlText += "<TD bgcolor=#CCCCCC>"
-	htmlText +="<P ALIGN=center>"
-	htmlText +=myMonth;
-	htmlText += "</TD>"
-
-	htmlText += "<TD bgcolor=#CCCCCC>"
-	htmlText +="<P ALIGN=center>"
-	htmlText +="&nbsp;Day&nbsp;";
-	htmlText += "</TD>"
-	
-	htmlText += "<TD bgcolor=#CCCCCC>"
-	htmlText +="<P ALIGN=center>"
-	htmlText +="D";
-	htmlText += "</TD>"
-
-
-  htmlText += "</TR>"
-
-
-  var std;
-  for (var i=1; i<=dIM; i++)
-  {
-	strB=strArray[i];
-	
-	if(i % 2 == 0){
-		htmlText += "<TR bgcolor=#CCCCCC>"
+	let headerCells = "";
+	for(let j = 0; j < 11; j++) {
+		headerCells += "<TD><P ALIGN=center>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>";
 	}
-	else {
-		
-		htmlText += "<TR bgcolor=#FFFFFF>"
+	headerCells += "<TD><P ALIGN=center>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>";
+	for(let j = 0; j < 3; j++) {
+		headerCells += "<TD><P ALIGN=center>&nbsp;</TD>";
 	}
 
-	for(var j = 0; j < 16; j++){
-		htmlText += "<TD>"
-		
-		htmlText +="<P ALIGN=center>"
-		if (strB[16]== 6){ htmlText += "<B>";}
-		
-		htmlText +=strB[j];
-		if (strB[16]== 6){ htmlText += "</B>";}
-		
-		htmlText += "</TD>"
+	let titleCells = "";
+	for(let j = 12; j >= 0; j--) {
+		titleCells += `
+			<TD bgcolor=#FFFFEE>
+				<P ALIGN=center>
+				<div class=hebrewTitle align=center>${lookupTitle(zmanim[j])}</div>
+			</TD>`;
 	}
-  htmlText +=  "</TR>"            
-  }
 
-  htmlText += "</TABLE>"
-  htmlText += "</body></html>"
-  
-  var a = window.open("")
-  a.document.open();
-  a.document.write(htmlText);
-  a.document.close();
+	let dataRows = "";
+	for(let i = 1; i <= dIM; i++) {
+		const rowData = strArray[i];
+		const bgColor = i % 2 === 0 ? "#CCCCCC" : "#FFFFFF";
+		dataRows += `<TR bgcolor=${bgColor}>`;
 
+		for(let j = 0; j < 16; j++) {
+			const isShabbat = rowData[16];
+			const content = isShabbat ? `<B>${rowData[j]}</B>` : rowData[j];
+			dataRows += `<TD><P ALIGN=center>${content}</TD>`;
+		}
+		dataRows += "</TR>";
+	}
   
+	const htmlText = `
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Monthly Zmanim</title>
+		<STYLE TYPE='text/css' media='screen'>
+			P,TR,TD{
+				font-size: 12px;
+				font-family:verdana , arial, helvetica, sans-serif;
+				color: black;
+			}
+			SPAN{
+				font-size: 15px;
+				font-family:Times New Roman,  serif;
+				color: black;
+			}
+			.hebrewTitle {
+				cursor:hand;
+				font-family:david,times new roman,serif;
+				font-weight:normal;
+				font-size:150%;
+				color:#000000;
+			}
+		</STYLE>
+		<STYLE TYPE='text/css' media='print'>
+			P,TR,TD{
+				font-size: 10px;
+				font-family:verdana , arial, helvetica, sans-serif;
+				color: black;
+			}
+			SPAN{
+				font-size: 13px;
+				font-family:Times New Roman,  serif;
+				color: black;
+			}
+			.hebrewTitle {
+				cursor:hand;
+				font-family:david,times new roman,serif;
+				font-weight:normal;
+				font-size:120%;
+				color:#000000;
+			}
+		</STYLE>
+	</head>
+	<body BGCOLOR=#FFFFFF TEXT=#000000 LINK=#0000FF VLINK=#663399 ALINK=#FF0000>
+		<div class=page align="center">
+		<center>
+		<TABLE width=700 border=1 cellpadding=1 cellspacing=0 bordercolor=Black>
+			<TR>
+				<TD COLSPAN=16>
+					${title}
+				</TD>
+			</TR>
+			<TR>
+				<TD>
+					<P ALIGN=center>
+					<FONT COLOR=red size=-5>©&nbsp;N.&nbsp;Kaplan&nbsp;&nbsp;</FONT>&nbsp;
+				</TD>
+				${headerCells}
+			</TR>
+			<TR>
+				${titleCells}
+				<TD bgcolor=#CCCCCC><P ALIGN=center>${myMonth}</TD>
+				<TD bgcolor=#CCCCCC><P ALIGN=center>&nbsp;Day&nbsp;</TD>
+				<TD bgcolor=#CCCCCC><P ALIGN=center>D</TD>
+			</TR>
+			${dataRows}
+		</TABLE>
+	</body>
+</html>`
+  
+    const blob = new Blob([htmlText], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const newWin = window.open(url, '_blank');
+    // If popup blocked, try to open a blank window and navigate it to the blob URL
+    if (!newWin) {
+      const fallback = window.open('');
+      if (fallback) {
+        try {
+          fallback.location = url;
+        } catch (e) {
+          // If even setting location fails, inform the user
+          alert('Unable to open the month page (popup blocked).');
+        }
+      } else {
+        alert('Unable to open the month page (popup blocked).');
+      }
+    }
+    // Revoke URL after a delay to allow the new window to load
+    setTimeout(() => { URL.revokeObjectURL(url); }, 10000);
 }
 
 
@@ -1036,7 +1046,7 @@ for( ; Date.parse(myDate) < Date.parse(myEndDate); myDate = new Date(Date.parse(
 		month = myDate.getUTCMonth()+1;
 		year =  myDate.getUTCFullYear();
 		day = myDate.getUTCDate();
-		erevMoadim1 = erevMoadim(myDate.getDay()+1, myHebMonth, myHebDay-1); 
+		erevMoadim1 = erevMoadim(myHebDay-1, myHebMonth, myHebYear); 
 		
 		if (erevMoadim1 != ""){
 			
