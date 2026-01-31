@@ -164,36 +164,6 @@ const zmanimIDs = [
 	"plag", "shkia", "tzeit", "shabbat",
 ];
 
-function buildDailyTable(cols=3) {
-	const tableRow = document.getElementById("daily-table-row");
-	const perCol = Math.ceil(zmanimIDs.length / cols);
-	for(let col=0; col<cols; col++) {
-		const td = document.createElement("td");
-		td.setAttribute("VALIGN", "TOP");
-		const innerTable = document.createElement("table");
-		innerTable.setAttribute("BORDER", "0");
-		const end = Math.min((col+1)*perCol, zmanimIDs.length);
-		for (let i = col*perCol; i < end; i++) {
-			const tr = document.createElement("tr");
-			const tdTitle = document.createElement("td");
-			tdTitle.innerHTML = lookupTitle(zmanimIDs[i]);
-			tr.appendChild(tdTitle);
-			const tdInput = document.createElement("td");
-			const input = document.createElement("input");
-			input.type = "text";
-			input.size = 9;
-			input.maxLength = 80;
-			input.readOnly = true;
-			input.name = zmanimIDs[i];
-			tdInput.appendChild(input);
-			tr.appendChild(tdInput);
-			innerTable.appendChild(tr);
-		}
-		td.appendChild(innerTable);
-		tableRow.appendChild(td);
-	}
-}
-
 
 function getInput(){
 	readGregorian();
@@ -270,6 +240,26 @@ function calculate(){
 	daily.tzeit.value = zmanOf("tzeit");
 }
 
+function hebrewNumber(num) {
+	const thousands = num - num % 1000;
+	const hundreds = num - thousands - num % 100;
+	const tens = num - thousands - hundreds - num % 10;
+	const ones = num - thousands - hundreds - tens;
+	const hundredsLetters = ['', 'ק', 'ר', 'ש', 'ת', 'תק', 'תר', 'תש', 'תת', 'תתק'];
+	const tensLetters = ['', 'י', 'כ', 'ל', 'מ', 'נ', 'ס', 'ע', 'פ', 'צ'];
+	const onesLetters = ['', 'א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ז', 'ח', 'ט'];
+	let letterString = '' + hundredsLetters[hundreds/100] + tensLetters[tens/10] + onesLetters[ones];
+	if(letterString.length > 1)
+		letterString = letterString.slice(0, letterString.length - 1) + '"' + letterString[letterString.length-1]
+	else
+		letterString += "'";
+	if(letterString.endsWith('י"ה'))
+		letterString = letterString.slice(0, letterString.length - 3) + 'ט"ו'
+	else if(letterString.endsWith('י"ו'))
+		letterString = letterString.slice(0, letterString.length - 3) + 'ט"ז';
+	return letterString;
+}
+
 function table() {
  const automatic = window.confirm("Do you wish to use DST automatically? OK for yes. Cancel for no.");
  
@@ -277,7 +267,7 @@ function table() {
 
  if(AMPM == 1) AMPM = 2;
  
- const dayOfWeek = jewish
+ const daysOfWeek = jewish
 	? ["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שבת"]
 	: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sha"];
 
@@ -286,7 +276,7 @@ function table() {
 	: ["", "ניסן", "אייר", "סיון", "תמוז", "אב", "אלול", "תשרי", "מרחשון", "כסלו", "טבת", "שבט", "אדר"];
 
  const strMonthYear = jewish
-	? `<span class=hebrewTitle align=center>${hebMonths[hMonth]}</span> ${hYear}`
+	? `<span class=hebrewTitle align=center>${hebMonths[hMonth]} ${hebrewNumber(hYear)}</span>`
 	: `${monthName[month - 1]} ${year}`;
  
  const refraction = with_refraction
@@ -299,14 +289,12 @@ function table() {
     <BR>GMT ${timezone >= 0 ? "+ " : " "}${timezone}${dst && !automatic ? " DST" : ""}, ${hite} meters above sealevel
     ${refraction}</FONT>`;
  
- let myDate;
  if(jewish) {
     const jd = hebrew_to_jd(hYear, hMonth, 1);
     [hYear, hMonth, hDay] = jd_to_hebrew(jd);
     [year, month, day] = jd_to_gregorian(jd);
-    myDate = new Date(year, month-1, day);
  } else {
-    myDate = new Date(year, month-1, 1);
+    day = 1;
  }
 
  let shortMonthTitle = jewish ? shortMonthName[month - 1] : "";
@@ -317,7 +305,7 @@ function table() {
     ? hebrew_month_days(hYear, hMonth)
     : daysInM(month, year);
 
- for(let date = 1; date <= dIM; date++) {
+ for(let date = 1, myDate = new Date(year, month - 1, day); date <= dIM; date++, myDate.setDate(day + 1)) {
 	year =  myDate.getFullYear();
 	month = myDate.getMonth()+1;
 	day = myDate.getDate();
@@ -359,13 +347,13 @@ function table() {
     	? `</B><span class=hebrewBody align=center>${torahReading}</span><B>`
     	: "&nbsp;";
 	
-	let myMoed = moadim(hDay, hMonth, hYear);
-	myMoed = myMoed
-		? `</B><span class=hebrewBody align=center>${myMoed}</span><B>`
+	let moed = moadim(hDay, hMonth, hYear);
+	moed = moed
+		? `</B><span class=hebrewBody align=center>${moed}</span><B>`
 		: "&nbsp;";
-	myMoed = torahReading !== "&nbsp;" ? `${torahReading} ${myMoed}` : myMoed;
+	moed = torahReading !== "&nbsp;" ? `${torahReading} ${moed}` : moed;
 	
-	let myDay;	
+	let secondaryDay;	
 	if(jewish) {
 		if(shortMonthName[myDate.getMonth()] !== shortMonthTitle && !monthChanged){
 			monthChanged = true;
@@ -373,7 +361,7 @@ function table() {
 				? `${shortMonthTitle}/<BR>${shortMonthName[myDate.getMonth()]}`
 				: `${shortMonthName[myDate.getMonth()]}/<BR>${shortMonthTitle}`;
 		}
-		myDay = myDate.getDate().toString();
+		secondaryDay = day;
 	} else {
 		if(!monthChanged) {	
 			if (shortMonthTitle === "") {
@@ -383,12 +371,11 @@ function table() {
 				shortMonthTitle = `${shortMonthTitle}/<BR>${hebMonths[hMonth]}`;
 			}
 		}
-		myDay = hDay.toString();
+		secondaryDay = hDay;
 	}
- 	const myDayofWeek = dayOfWeek[myDate.getDay()];
+ 	const dayofWeek = daysOfWeek[myDate.getDay()];
 	strArray[date] = [tzeit, shkia, shabbat, plag, minchak, minchag, chatzot, tefillah, shema, hanetz, misheyakir, alot,
-		myMoed, myDay, myDayofWeek, date, myDate.getDay() === 6 ? 6 : 1];
-	myDate.setDate(day + 1);
+		moed, secondaryDay, dayofWeek, date, myDate.getDay() == 6];
   }
  writeMonthPage(title, shortMonthTitle, strArray, dIM);
 }
