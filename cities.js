@@ -152,7 +152,7 @@ Yaron's House|34.171106|118.630283|-8|0|18|1
 
 function loadCities() {
     // Cache DOM elements
-    locationSelect = document.querySelector('select[name="location"]');
+    const locationSelect = document.querySelector('select[name="location"]');
     
     // Clear existing options
     locationSelect.innerHTML = '';
@@ -186,10 +186,12 @@ function loadCities() {
 }
 
 function setUserInput() {
+    const locationSelect = document.querySelector('select[name="location"]');
     locationSelect.selectedIndex = locationSelect.options.length - 1;
 }
 
 function getLocation() {
+    const locationSelect = document.querySelector('select[name="location"]');
     const LocationStr = locationSelect.value;
     const match = LocationStr.match(/^\s*([^/]+)\/([^/]+)\/([^/]+)\/([^/]+)\/([^/]+)\/([^*]+)\*(.*)\s*$/);
     const lat = match ? Number(match[1]) : 0;
@@ -214,6 +216,7 @@ function getLocation() {
 }
 
 function getLocationName() {
+    const locationSelect = document.querySelector('select[name="location"]');
     const LocationStr = locationSelect.value;
 	const match = LocationStr.match(/\*([\s\S]*)$/);
 	return match ? match[1] : '';

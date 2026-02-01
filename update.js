@@ -36,6 +36,26 @@ function updateFromGregorian() {	// Update hebrew calendar from Gregorian
 	updateHebrewDescription();
 }
 
+function hebrewNumber(num) {
+	const thousands = num - num % 1000;
+	const hundreds = num - thousands - num % 100;
+	const tens = num - thousands - hundreds - num % 10;
+	const ones = num - thousands - hundreds - tens;
+	const hundredsLetters = ['', 'ק', 'ר', 'ש', 'ת', 'תק', 'תר', 'תש', 'תת', 'תתק'];
+	const tensLetters = ['', 'י', 'כ', 'ל', 'מ', 'נ', 'ס', 'ע', 'פ', 'צ'];
+	const onesLetters = ['', 'א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ז', 'ח', 'ט'];
+	let letterString = '' + hundredsLetters[hundreds/100] + tensLetters[tens/10] + onesLetters[ones];
+	if(letterString.length > 1)
+		letterString = letterString.slice(0, letterString.length - 1) + '"' + letterString[letterString.length-1]
+	else
+		letterString += "'";
+	if(letterString.endsWith('י"ה'))
+		letterString = letterString.slice(0, letterString.length - 3) + 'ט"ו'
+	else if(letterString.endsWith('י"ו'))
+		letterString = letterString.slice(0, letterString.length - 3) + 'ט"ז';
+	return letterString;
+}
+
 function updateHebrew() {
 	// Read Hebrew date
 	const hebrew = document.hebrew;
@@ -57,7 +77,7 @@ function updateHebrew() {
 	}
 	// Update Hebrew day list
 	hebrew.day.options[29] =
-		hebrew_month_days(hYear, hMonth) == 30 ? new Option("30", "30") : null;
+		hebrew_month_days(hYear, hMonth) == 30 ? new Option(hebrewNumber(30), 30) : null;
     hebrew.year.value = hYear;
     hebrew.month.value = hMonth;
     hebrew.day.value = hDay;

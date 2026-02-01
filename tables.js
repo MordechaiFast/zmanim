@@ -787,41 +787,6 @@ for (var i=1; i<=numDays; i++){
 }
 
 
-function DST(year, month, day) {
-	if(diaspora == 1) {
-		if (month > 3 && month < 11)
-			return true
-		else {
-			if (month == 3 && day >= NthDOW(2, 1, 3, year))
-				return true
-			else if (month == 11 && day < NthDOW(1, 1, 11, year))
-				return true;
-		}
-	} else if(diaspora == 2) {
-		// New Zealand DST
-		if (month > 9 || month < 4)
-			return true
-		else {
-			if (month == 9 && day >= NthDOW(0, 1, 9, year))
-				return true
-			else if (month == 4 && day < NthDOW(1, 1, 4, year))
-				return true;
-		}
-	} else {
-		// Israel DST
-		if (month > 3 && month < 10)
-			return true
-		else {
-			if (month == 3 && day >= NthDOW(0, 6, 3, year))
-				return true
-			else if (month == 10 && day < NthDOW(0, 1, 10, year))
-				return true;
-		}
-	}
-	return false;
-}
-
-
 function yearShabbat() {
 	var hebDayNumber = new Array("", "א'","ב'","ג'","ד'","ה'","ו'","ז'","ח'","ט'","י'","י\"א","י\"ב","י\"ג","י\"ד","ט\"ו","ט\"ז","י\"ז","י\"ח","י\"ט","כ'","כ\"א","כ\"ב","כ\"ג","כ\"ד","כ\"ה","כ\"ו","כ\"ז","כ\"ח","כ\"ט","ל'");
 

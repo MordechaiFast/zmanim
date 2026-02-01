@@ -32,7 +32,7 @@ function hebrewCalendarElapsedDays(year) {
                    Math.floor(partsElapsed / 1080));
 
   /* Conjunction day */
-  let day = 1 + (29 * monthsElapsed) + Math.floor(hoursElapsed/24);
+  days = 1 + (29 * monthsElapsed) + Math.floor(hoursElapsed/24);
 
   /* Conjunction parts */
   parts = ((hoursElapsed % 24) * 1080) +
@@ -42,22 +42,22 @@ function hebrewCalendarElapsedDays(year) {
   if ((parts >= 19440) ||
 
   /* ...or is on a Tuesday... */
-      (((day % 7) == 2) &&
+      (((days % 7) == 2) &&
   /* at 9 hours, 204 parts or later */
        (parts >= 9924)  &&
   /* of a common year */
        (!hebrewLeapYear(year))) ||
 
   /* ...or is on a Monday at... */
-      (((day % 7) == 1) &&
+      (((days % 7) == 1) &&
   /* 15 hours, 589 parts or later... */
        (parts >= 16789) &&
   /* at the end of a leap year */
        (hebrewLeapYear(year-1))))
   /* Then postpone Rosh HaShanah one day */
-    alternativeDay = day+1;
+    alternativeDay = days+1;
   else
-    alternativeDay = day;                                 
+    alternativeDay = days;                                 
 
   /* If Rosh HaShanah would occur on Sunday, Wednesday, */
   /* or Friday */
