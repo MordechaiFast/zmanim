@@ -14,14 +14,15 @@ function setGregorian(year, month, day){
 
 function readGregorian(){
 	const gregorian = document.querySelector('input[name="gregorian"]');
-	year = Number(gregorian.value.slice(0, 4));
-	month = Number(gregorian.value.slice(5, 7));
-	day = Number(gregorian.value.slice(8, 10));
+	const year = Number(gregorian.value.slice(0, 4));
+	const month = Number(gregorian.value.slice(5, 7));
+	const day = Number(gregorian.value.slice(8, 10));
+	return [year, month, day];
 }
 
 
 function updateFromGregorian() {	// Update hebrew calendar from Gregorian
-	readGregorian();
+	const [year, month, day] = readGregorian();
 	// Set Hebrew date
 	const hebrew = document.hebrew;
     const jd = gregorian_to_jd(year, month, day)
@@ -34,26 +35,6 @@ function updateFromGregorian() {	// Update hebrew calendar from Gregorian
 	hebrew.month.value = hMonth;
     hebrew.day.value = hDay;
 	updateHebrewDescription();
-}
-
-function hebrewNumber(num) {
-	const thousands = num - num % 1000;
-	const hundreds = num - thousands - num % 100;
-	const tens = num - thousands - hundreds - num % 10;
-	const ones = num - thousands - hundreds - tens;
-	const hundredsLetters = ['', 'ק', 'ר', 'ש', 'ת', 'תק', 'תר', 'תש', 'תת', 'תתק'];
-	const tensLetters = ['', 'י', 'כ', 'ל', 'מ', 'נ', 'ס', 'ע', 'פ', 'צ'];
-	const onesLetters = ['', 'א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ז', 'ח', 'ט'];
-	let letterString = '' + hundredsLetters[hundreds/100] + tensLetters[tens/10] + onesLetters[ones];
-	if(letterString.length > 1)
-		letterString = letterString.slice(0, letterString.length - 1) + '"' + letterString[letterString.length-1]
-	else
-		letterString += "'";
-	if(letterString.endsWith('י"ה'))
-		letterString = letterString.slice(0, letterString.length - 3) + 'ט"ו'
-	else if(letterString.endsWith('י"ו'))
-		letterString = letterString.slice(0, letterString.length - 3) + 'ט"ז';
-	return letterString;
 }
 
 function updateHebrew() {
@@ -111,7 +92,46 @@ function updateHebrewDescription() {
 		);
 }
 
-function yearDescription(hYear) {   
+function updateFromHebrew() {	// Update Gergoran calendar from Hebrew
+	// Read Hebrew date
+    const hebrew = document.hebrew;
+	const hYear = Number(hebrew.year.value);
+	const hMonth = Number(hebrew.month.value);
+	const hDay = Number(hebrew.day.value);
+	// Set Gregorian date
+    const jd = hebrew_to_jd(hYear, hMonth, hDay);
+    const [year, month, day] = jd_to_gregorian(jd);
+	setGregorian(year, month, day);
+}
+
+
+function checkDST(){
+	const [year, month, day] = readGregorian();
+	const inputs = document.myform1;
+	inputs.dst.checked = DST(year, month, day);
+}
+
+function hebrewNumber(num) {
+	const thousands = num - num % 1000;
+	const hundreds = num - thousands - num % 100;
+	const tens = num - thousands - hundreds - num % 10;
+	const ones = num - thousands - hundreds - tens;
+	const hundredsLetters = ['', 'ק', 'ר', 'ש', 'ת', 'תק', 'תר', 'תש', 'תת', 'תתק'];
+	const tensLetters = ['', 'י', 'כ', 'ל', 'מ', 'נ', 'ס', 'ע', 'פ', 'צ'];
+	const onesLetters = ['', 'א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ז', 'ח', 'ט'];
+	let letterString = '' + hundredsLetters[hundreds/100] + tensLetters[tens/10] + onesLetters[ones];
+	if(letterString.length > 1)
+		letterString = letterString.slice(0, letterString.length - 1) + '"' + letterString[letterString.length-1]
+	else
+		letterString += "'";
+	if(letterString.endsWith('י"ה'))
+		letterString = letterString.slice(0, letterString.length - 3) + 'ט"ו'
+	else if(letterString.endsWith('י"ו'))
+		letterString = letterString.slice(0, letterString.length - 3) + 'ט"ז';
+	return letterString;
+}
+
+function yearDescription(hYear) {
     const days = hebrew_year_days(hYear);
     if(days == 353)
 		return "שנה חסרה רגילה (353 ימים)"
@@ -129,26 +149,7 @@ function yearDescription(hYear) {
 		return "Invalid year length: " + hebrew_year_days(hYear) + " days.";
 }
 
-function updateFromHebrew() {	// Update Gergoran calendar from Hebrew
-	// Read Hebrew date
-    const hebrew = document.hebrew;
-	const hYear = Number(hebrew.year.value);
-	const hMonth = Number(hebrew.month.value);
-	const hDay = Number(hebrew.day.value);
-	// Set Gregorian date
-    const jd = hebrew_to_jd(hYear, hMonth, hDay);
-    const [year, month, day] = jd_to_gregorian(jd);
-	setGregorian(year, month, day);
-}
-
-
-function checkDST(){
-	readGregorian();	
-	const inputs = document.myform1;
-	inputs.dst.checked = DST(year, month, day);
-}
-
-function DST(year, month, day) {
+function DST(year, month, day, diaspora=0) {
 	if(diaspora == 1) {
 		if (month > 3 && month < 11)
 			return true
@@ -183,9 +184,8 @@ function DST(year, month, day) {
 }
 
 
-function erevMoadim(hday, hmonth, hyear) {
+function erevMoadim(hday, hmonth, hyear, diaspora=false) {
 	const dow = (hebrew_to_jd(hyear, hmonth, hday) + 1.5) % 7 + 1;
-	
 	if(dow == 6)
 		return 1;
 	if(hmonth == 1) {
@@ -211,7 +211,7 @@ function erevMoadim(hday, hmonth, hyear) {
 }
 
 
-function moadim(hday, hmonth, hyear) {
+function moadim(hday, hmonth, hyear, diaspora=false) {
 	const dow = (hebrew_to_jd(hyear, hmonth, hday) + 1.5) % 7 + 1;
 	if(hmonth == 7) {
 		if(hday == 1 || hday == 2)
@@ -361,4 +361,3 @@ function NthDOW(nth,weekday,month,year) {
 	var days = daysInM(month, year);
 	return days - (DOW(days, month, year) - weekday + 7) % 7;
 }
-

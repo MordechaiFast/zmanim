@@ -166,7 +166,7 @@ const zmanimIDs = [
 
 
 function getInput(){
-	readGregorian();
+	[year, month, day] = readGregorian();
 	
 	const hebrew = document.hebrew;
 	hDay = Number(hebrew.day.value);
