@@ -176,13 +176,8 @@ function getInput(){
 	jewish = document.myform.jewish.checked;
 	
 	const inputs = document.myform1;
-	lat = Number(inputs.latitude.value);
-	long = Number(inputs.longitude.value);
-	
-	if (inputs.NorthSouth.selectedIndex==0) lat=Math.abs(lat);
-		else lat=-Math.abs(lat);
-	if (inputs.EastWest.selectedIndex==0) long=-Math.abs(long);
-		else  long=Math.abs(long);
+	lat = Math.abs(inputs.latitude.value) * (inputs.NorthSouth.value == 'N' ? 1 : -1);
+	long = Math.abs(inputs.longitude.value) * (inputs.EastWest.value == 'W' ? 1 : -1);
 	
 	timezone = Number(inputs.timezone.value);
 	dst = inputs.dst.checked;	

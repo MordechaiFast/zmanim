@@ -104,8 +104,7 @@ color: black;
 
 	<select class="ctr" DIR="RTL" NAME=year onChange="updateFromHebrew();updateHebrew();updateHebrewDescription();checkDST();calculate();">
 		<script>
-			let thisHebrewYear = new Date().getFullYear() + 3760;
-			for (let year = thisHebrewYear - 20; year < thisHebrewYear + 10; year++)
+			for (let thisHebrewYear = new Date().getFullYear() + 3760, year = thisHebrewYear - 20; year < thisHebrewYear + 10; year++)
 				this.hebrew.year.add(new Option(hebrewNumber(year), year));
 		 </script>
 	</select>
@@ -135,17 +134,17 @@ color: black;
 
 <td width=27%>
 	קו רוחב&nbsp;
-	<input name="latitude" value="31.778533" size="6" type="text" onchange="setUserInput();calculate()">&deg;&nbsp;
-	<select name="NorthSouth" onchange="setUserInput();calculate()">
-		<option value="N">צפון&nbsp;</option>
-		<option value="S">דרום&nbsp;</option>
-	</select>
-<br>
-קו אורך&nbsp;<input name="longitude" value="35.234265" size="6" type="text" onchange="setUserInput();calculate()">&deg;&nbsp;
-	<select name="EastWest" onchange="setUserInput();calculate()">
-		<option value="E">מזרח&nbsp;</option>
-		<option value="W">מערב&nbsp;</option>
-	</select>
+	<input name="latitude" value="31.778533" size="6" type="text" onchange="setUserInput();calculate();">&deg;&nbsp;
+	<input type="radio" name="NorthSouth" value="N" checked onchange="setUserInput();calculate();">
+		צפון&nbsp;
+	<input type="radio" name="NorthSouth" value="S" onchange="setUserInput();calculate();">
+		דרום&nbsp;
+	<br>
+	קו אורך&nbsp;<input name="longitude" value="35.234265" size="6" type="text" onchange="setUserInput();calculate()">&deg;&nbsp;
+	<INPUT type="radio" checked name="EastWest" value="E" onclick="setUserInput();calculate();">
+		מזרח&nbsp;
+	<INPUT type="radio" name="EastWest" value="W" onclick="setUserInput();calculate();">
+		מערב&nbsp;
 </td>
 
 
