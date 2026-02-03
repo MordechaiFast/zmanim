@@ -173,7 +173,7 @@ function getInput(){
 	hMonth = Number(hebrew.month.value);
 	hYear = Number(hebrew.year.value);
 
-	jewish = document.myform.jewish.checked;
+	jewish = Number(document.tables.jewish.value);
 	
 	const inputs = document.myform1;
 	lat = Math.abs(inputs.latitude.value) * (inputs.NorthSouth.value == 'N' ? 1 : -1);
@@ -211,7 +211,7 @@ function getInput(){
 
 function calculate(){
 	getInput();
-	const daily = document.myform1;
+	const daily = document.dailyTable;
 	daily.alot.value = zmanOf("alot");
 	daily.misheyakir.value = zmanOf("misheyakir");
 	daily.hanetz.value = zmanOf("hanetz");

@@ -1,238 +1,248 @@
 ﻿<html>
 <head>
-
-   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
-
-   <title>[Working]Sun Position Zmanim</title>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
+<title>[Working]Sun Position Zmanim</title>
 <script SRC="cities.js"></script>
 <script src="update.js"></script>
 <script src="tables.js"></script>
-<script SRC="zman.js">
-</script>
-<script SRC="hebrew.js">
-</script>
-<script SRC="torahReading.js">
-</script>
-
-
-<script>
-	function currentData() {
-		getLocation()
-	}
-</script>
-
+<script SRC="zman.js"></script>
+<script SRC="hebrew.js"></script>
+<script SRC="torahReading.js"></script>
 <STYLE TYPE="text/css">
-TR{
-font-size: 12px;
-font-family:verdana , arial, helvetica, sans-serif;
-color: black;
-}
-.regular {
-font-family:Times New Roman, verdana , arial, helvetica, sans-serif;
-color: black;
-}
+    TR{
+    font-size: 12px;
+    font-family:verdana , arial, helvetica, sans-serif;
+    color: black;
+    }
+    .regular {
+    font-family:Times New Roman, verdana , arial, helvetica, sans-serif;
+    color: black;
+    }
 
-SPAN{
-font-size: 15px;
-font-family:David,Times New Roman,  serif;
-color: black;
-}
+    SPAN{
+    font-size: 15px;
+    font-family:David,Times New Roman,  serif;
+    color: black;
+    }
 
+    P{
+    font-size: big;
+    font-family:verdana , arial, helvetica, sans-serif;
+    color: red;
+    font-weight:bold
+    }
 
-P{
-font-size: big;
-font-family:verdana , arial, helvetica, sans-serif;
-color: red;
-font-weight:bold
-}
+    .smallOne
+    {
+    font-size: 10px;
+    font-family:verdana , arial, helvetica, sans-serif;
+    color: black;
+    }
 
+    .btn {cursor:hand;font-family:david,times new roman,serif;font-weight:normal;font-size:100%;color:#000000;background-color:#FFFFEE}
+    .btn1 {cursor:hand;font-family:david,times new roman,serif;font-weight:normal;font-size:19px;color:#000000}
 
-.smallOne
-{
-font-size: 10px;
-font-family:verdana , arial, helvetica, sans-serif;
-color: black;
-}
-
-.btn {cursor:hand;font-family:david,times new roman,serif;font-weight:normal;font-size:100%;color:#000000;background-color:#FFFFEE}
-.btn1 {cursor:hand;font-family:david,times new roman,serif;font-weight:normal;font-size:19px;color:#000000}
-
-.ctr {cursor:hand;font-family:arial,times new roman,serif;font-weight:normal;font-size:12px;color:#000000}
-
+    .ctr {cursor:hand;font-family:arial,times new roman,serif;font-weight:normal;font-size:12px;color:#000000}
 </STYLE>
-
-
 </head>
 <body bgcolor="#EFEFCE" background="parchmnt.jpg" onload="initTorahReadings();setDate();loadCities();getLocation();checkDST();calculate();">
-
-<center><form name="whichweek" onSubmit="0"><input type="HIDDEN" name="weekdate" size=12 ></form>
-<p>שעות זמניות לפי מקום השמש</p></center>
-
-<center><table WIDTH="100%" >
-<tr>
-<form NAME=myform>
-<td>
 <center>
-
-<input type="date" name="gregorian" onChange="updateFromGregorian();checkDST();calculate();"/>
-&nbsp;
-
+    <p>שעות זמניות לפי מקום השמש</p>
 </center>
-</td>
-<td><input onclick='table(2)' type=button value="לוח חודשי" name=printMonth>
-חודש עברי
-<INPUT type="checkbox" checked name="jewish" value=1 >
-</td>
-</form>
-<FORM name=hebrew >
-<TD align=middle dir =rtl>
-	<select class="ctr" DIR="RTL" NAME="day" onChange="updateFromHebrew();updateHebrewDescription();checkDST();calculate();">
-		<script>
-			for(let day = 1; day <= 30; day++)
-				this.hebrew.day.add(new Option(hebrewNumber(day), day));
-		</script>
-	</select>
-
-	<SELECT class="ctr" dir =rtl name=month  onChange="updateFromHebrew();updateHebrew();updateHebrewDescription();checkDST();calculate();" >
-		<script>
-			const hebMonthName = ["תשרי", "מרחשון", "כסלו", "טבת", "שבט", "אדר א'", "אדר ב'", "ניסן", "אייר", "סיון", "תמוז", "אב", "אלול"];
-			const hebMonthValue = [7,8,9,10,11,12,13,1,2,3,4,5,6];
-			for (let i = 0; i < hebMonthName.length; i++)
-				hebrew.month.options[i] = new Option(hebMonthName[i], hebMonthValue[i]);
-		</script>
-	</SELECT>
-
-	<select class="ctr" DIR="RTL" NAME=year onChange="updateFromHebrew();updateHebrew();updateHebrewDescription();checkDST();calculate();">
-		<script>
-			for (let thisHebrewYear = new Date().getFullYear() + 3760, year = thisHebrewYear - 20; year < thisHebrewYear + 10; year++)
-				this.hebrew.year.add(new Option(hebrewNumber(year), year));
-		 </script>
-	</select>
-
-
-                  <BR><INPUT class=ctr readOnly size=27 name=leap DIR="RTL">
-                  <INPUT class=ctr readOnly size=27 name=holidays DIR="RTL"></form> </TD>
-</tr>
-</table></center>
-
-<center><table BORDER CELLPADDING=3 WIDTH="100%" dir="rtl">
-	<form ACTION="" METHOD=POST name=myform1>
-<tr>
-<td>
-עיר:<select  class=ctr name="location" onchange="getLocation();checkDST();calculate();" >
-
-<option value="0.00/0.00/0/0/18/1*">קלט משתמש</option>
-</select>
-
-<INPUT type="checkbox" name="diaspora" value="Selection" onclick="calculate();">חוץ לארץ
-<br>
-הדלקת נרות &nbsp;<input name="nerot" value="18" size=1 type="text" onchange="calculate()">&nbsp;דקות לפני שקיעה&nbsp;&nbsp;&nbsp;
-גובה&nbsp;<input name="hite" value="0" size=1 type="text" onchange="calculate()">&nbsp;מטרים מעל פני הים
-
-</td>
-
-
-<td width=27%>
-	קו רוחב&nbsp;
-	<input name="latitude" value="31.778533" size="6" type="text" onchange="setUserInput();calculate();">&deg;&nbsp;
-	<input type="radio" name="NorthSouth" value="N" checked onchange="setUserInput();calculate();">
-		צפון&nbsp;
-	<input type="radio" name="NorthSouth" value="S" onchange="setUserInput();calculate();">
-		דרום&nbsp;
-	<br>
-	קו אורך&nbsp;<input name="longitude" value="35.234265" size="6" type="text" onchange="setUserInput();calculate()">&deg;&nbsp;
-	<INPUT type="radio" checked name="EastWest" value="E" onclick="setUserInput();calculate();">
-		מזרח&nbsp;
-	<INPUT type="radio" name="EastWest" value="W" onclick="setUserInput();calculate();">
-		מערב&nbsp;
-</td>
-
-
-
-
-<td width=30%>
-<center>אזור זמן:<select name="timezone" onchange="setUserInput();calculate()"><option value="0">0&nbsp;</option><option value="1" >+1&nbsp;</option><option value="-1">-1&nbsp;</option><option value="2">+2&nbsp;</option><option value="-2">-2&nbsp;</option><option value="3">+3&nbsp;</option><option value="-3">-3&nbsp;</option><option value="4">+4&nbsp;</option><option value="-4">-4&nbsp;</option><option value="5">+5&nbsp;</option><option value="-5">-5&nbsp;</option><option value="6">+6&nbsp;</option><option value="-6">-6&nbsp;</option><option value="7">+7&nbsp;</option><option value="-7">-7&nbsp;</option><option value="8">+8&nbsp;</option><option value="-8">-8&nbsp;</option><option value="9">+9&nbsp;</option><option value="-9">-9&nbsp;</option><option value="10">+10&nbsp;</option><option value="-10">-10&nbsp;</option><option value="11">+11&nbsp;</option><option value="-11">-11</option><option value="12">+12&nbsp;</option><option value="-12">-12&nbsp;</option></select>
-<br>
-<INPUT type="checkbox" name="dst" value="Selection" onclick="calculate();">שעון קיץ&nbsp;
-
+<center>
+    <table WIDTH="100%" >
+        <tr>
+            <td>
+                <center>
+                    <input type="date" name="gregorian"
+                    onChange="updateFromGregorian();checkDST();calculate();"/>&nbsp;
+                </center>
+            </td>
+            <TD align=middle dir =rtl>
+                <FORM name=hebrew >
+                    <select class="ctr" DIR="RTL" NAME="day" onChange="updateFromHebrew();updateHebrewDescription();checkDST();calculate();">
+                        <script>
+                            for(let day = 1; day <= 30; day++)
+                                hebrew.day.add(new Option(hebrewNumber(day), day));
+                        </script>
+                    </select>
+                    <SELECT class="ctr" dir =rtl name=month  onChange="updateFromHebrew();updateHebrew();updateHebrewDescription();checkDST();calculate();" >
+                        <script>
+                            const hebMonthName = ["תשרי", "מרחשון", "כסלו", "טבת", "שבט", "אדר א'", "אדר ב'", "ניסן", "אייר", "סיון", "תמוז", "אב", "אלול"];
+                            const hebMonthValue = [7,8,9,10,11,12,13,1,2,3,4,5,6];
+                            for (let i = 0; i < hebMonthName.length; i++)
+                                hebrew.month.options[i] = new Option(hebMonthName[i], hebMonthValue[i]);
+                        </script>
+                    </SELECT>
+                    <select class="ctr" DIR="RTL" NAME=year onChange="updateFromHebrew();updateHebrew();updateHebrewDescription();checkDST();calculate();">
+                        <script>
+                            for (let thisHebrewYear = new Date().getFullYear() + 3760, year = thisHebrewYear - 20; year < thisHebrewYear + 10; year++)
+                                hebrew.year.add(new Option(hebrewNumber(year), year));
+                        </script>
+                    </select>
+                    <BR><INPUT class=ctr readOnly size=27 name=leap DIR="RTL">
+                    <INPUT class=ctr readOnly size=27 name=holidays DIR="RTL">
+                </form>
+            </TD>
+        </tr>
+    </table>
 </center>
+<center>
+    <table BORDER CELLPADDING=3 WIDTH="100%" dir="rtl">
+	    <form ACTION="" METHOD=POST name=myform1>
+            <tr>
+                <td>
+                    עיר:
+                    <select  class=ctr name="location" onchange="getLocation();checkDST();calculate();">
+                        <option value="0.00/0.00/0/0/18/1*">קלט משתמש</option>
+                    </select>
+                    <INPUT type="checkbox" name="diaspora" value="Selection" onclick="calculate();">
+                    חוץ לארץ
+                    <br>
+                    הדלקת נרות &nbsp;
+                    <input name="nerot" value="18" size=1 type="text" onchange="calculate()">
+                    &nbsp;דקות לפני שקיעה&nbsp;&nbsp;&nbsp;
+                    גובה&nbsp;
+                    <input name="hite" value="0" size=1 type="text" onchange="calculate()">
+                    &nbsp;מטרים מעל פני הים
+                </td>
+                <td width=27%>
+                    קו רוחב&nbsp;
+                    <input name="latitude" value="31.778533" size="6" type="text" onchange="setUserInput();calculate();">&deg;&nbsp;
+                    <input type="radio" name="NorthSouth" value="N" checked onchange="setUserInput();calculate();">
+                    &nbsp;צפון
+                    <input type="radio" name="NorthSouth" value="S" onchange="setUserInput();calculate();">
+                    &nbsp;דרום
+                    <br>
+                    קו אורך&nbsp;<input name="longitude" value="35.234265" size="6" type="text" onchange="setUserInput();calculate()">&deg;&nbsp;
+                    <INPUT type="radio" checked name="EastWest" value="E" onclick="setUserInput();calculate();">
+                    מזרח&nbsp;
+                    <INPUT type="radio" name="EastWest" value="W" onclick="setUserInput();calculate();">
+                    מערב&nbsp;
+                </td>
+                <td width=30%>
+                    <center>
+                        אזור זמן:
+                        <select name="timezone" onchange="setUserInput();calculate()">
+                            <option value="0">0</option>
+                            <option value="1">+1</option>
+                            <option value="-1">-1</option>
+                            <option value="2">+2</option>
+                            <option value="-2">-2</option>
+                            <option value="3">+3</option>
+                            <option value="-3">-3</option>
+                            <option value="4">+4</option>
+                            <option value="-4">-4</option>
+                            <option value="5">+5</option>
+                            <option value="-5">-5</option>
+                            <option value="6">+6</option>
+                            <option value="-6">-6</option>
+                            <option value="7">+7</option>
+                            <option value="-7">-7</option>
+                            <option value="8">+8</option>
+                            <option value="-8">-8</option>
+                            <option value="9">+9</option>
+                            <option value="-9">-9</option>
+                            <option value="10">+10</option>
+                            <option value="-10">-10</option>
+                            <option value="11">+11</option>
+                            <option value="-11">-11</option>
+                            <option value="12">+12</option>
+                            <option value="-12">-12</option>
+                        </select>
+                        <INPUT type="checkbox" name="dst" value="Selection" onclick="calculate();">
+						שעון קיץ&nbsp;
+						<br>
+						<input type="checkbox" checked name="automatic" onclick="calculate();"/>
+						&nbsp;קובע שעון קיץ אוטומטי
+                    </center>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    זמני לילה:<br>
+                    עלות השחר<input name="alotDeg" value="19.75" size="2" type="text" onchange="calculate()">&nbsp;&deg;&nbsp;&nbsp;
+                    משיכיר<input name="misheyakirDeg" value="11.5" size="1" type="text" onchange="calculate()">&nbsp;&deg;&nbsp;&nbsp;
+                    צאת הכוכבים<input name="tzeitDeg" value="4.61" size="1" type="text" onchange="calculate()">&nbsp;&deg;
+                </td>
+                <td width=27%>
+                    לחץ אויר&nbsp;<input name="pressure" value="1010" size="2" type="text" onchange="calculate()">&nbsp;millibars&nbsp;
+                    <br>
+                    טמפרטורה&nbsp;<input name="temp" value="10" size="1" type="text" onchange="calculate()">&nbsp;&deg;C
+                </td>
 
-</td>
-</tr>
-
-<tr>
-	<td>
-		זמני לילה:<br>
-		עלות השחר<input name="alotDeg" value="19.75" size="2" type="text" onchange="calculate()">&nbsp;&deg;&nbsp;&nbsp;
-		משיכיר<input name="misheyakirDeg" value="11.5" size="1" type="text" onchange="calculate()">&nbsp;&deg;&nbsp;&nbsp;
-		צאת הכוכבים<input name="tzeitDeg" value="4.61" size="1" type="text" onchange="calculate()">&nbsp;&deg;
-	</td>
-	<td width=27%>
-		לחץ אויר&nbsp;<input name="pressure" value="1010" size="2" type="text" onchange="calculate()">&nbsp;millibars&nbsp;
-		<br>
-		טמפרטורה&nbsp;<input name="temp" value="10" size="1" type="text" onchange="calculate()">&nbsp;&deg;C
-	</td>
-
-<td>
-	<center dir="rtl">
-		<INPUT type="radio" checked name="ampm" value=1 onclick="calculate();">
-			24H&nbsp;
-		<INPUT type="radio" name="ampm" value=0 onclick="calculate();">
-			12H&nbsp;
-		<INPUT type="checkbox" name="seconds" value="Selection" onclick="calculate();" checked>
-			עם שניות
-		<BR>
-		<input type="radio" name="GRA_MGA"  value="GRA" onclick="calculate();" checked>
-			גר"א&nbsp;
-		<input type="radio" name="GRA_MGA"  value="MGA" onclick="calculate();">
-			מג"א&nbsp;
-		<INPUT type="checkbox" name="refraction" value="Selection" onclick="calculate();" checked>
-			לפי מקום השמש
-	</center>
-</td>
-</tr>
-</table></center>
-
+                <td>
+                    <center dir="rtl">
+                        <INPUT type="radio" checked name="ampm" value=1 onclick="calculate();">
+                            24H&nbsp;
+                        <INPUT type="radio" name="ampm" value=0 onclick="calculate();">
+                            12H&nbsp;
+                        <INPUT type="checkbox" name="seconds" value="Selection" onclick="calculate();" checked>
+                            עם שניות
+                        <BR>
+                        <input type="radio" name="GRA_MGA"  value="GRA" onclick="calculate();" checked>
+                            גר"א&nbsp;
+                        <input type="radio" name="GRA_MGA"  value="MGA" onclick="calculate();">
+                            מג"א&nbsp;
+                        <INPUT type="checkbox" name="refraction" value="Selection" onclick="calculate();" checked>
+                            לפי מקום השמש
+                    </center>
+                </td>
+            </tr>
+        </form>
+    </table>
+</center>
 <BR>
-	<center>זמנים של היום</center>
-<center><table BORDER=0 CELLPADDING=2 dir="rtl">
-<tr id="daily-table-row">
-<td VALIGN=TOP>
-<table BORDER=0 >
-<script>
-for (var i = 0; i < zmanimIDs.length; i++){
-	var str = ""
-	if (i == 4 || i == 8){
-		str += "</table></td><td VALIGN=TOP><table BORDER=0 >"
-	}
-	str +="<tr>"
-	str += "<td ALIGN=CENTER class=btn1 dir=rtl>" + lookupTitle(zmanimIDs[i]) + "</td>"
-	str += "<td ALIGN=CENTER><input type='text' size='9' maxlength='80' onFocus='this.blur()' onClick='this.blur()' name='" + zmanimIDs[i] + "'></td>"
-	str += "</tr>"
-	document.write(str)
-}
-</script>
-</table>
-</td>
-</tr>
-</form>
-</table>
-<form>
-<select class="btn" dir =rtl NAME="select" onchange="if(form.select.options[form.select.selectedIndex].value!=''){yearTable(form.select.options[form.select.selectedIndex].value)}">
-<option VALUE="" Selected >לוח זמנים לכל השנה
-<script>
-for (var i = 0; i < zmanimIDs.length; i++){
-	document.write("<option VALUE='" + zmanimIDs[i] + "'>" + lookupTitle(zmanimIDs[i]) + "</option>")
-}
-
-</script>
-
-
-</select></form>
-
-
+<center>זמנים של היום</center>
+<center>
+    <table BORDER=0 CELLPADDING=2 dir="rtl">
+		<form name="dailyTable">
+			<tr>
+				<td VALIGN=TOP>
+					<table BORDER=0 >
+						<script>
+							for (let i = 0; i < zmanimIDs.length; i++){
+								let html = ""
+								if (i == 4 || i == 8){
+									html += "</table></td><td VALIGN=TOP><table BORDER=0 >"
+								}
+								html += `<tr>
+								<td ALIGN=CENTER class=btn1 dir=rtl>${lookupTitle(zmanimIDs[i])}</td>
+								<td ALIGN=CENTER><input type='text' size='9' maxlength='80' readonly name='${zmanimIDs[i]}'></td>
+								</tr>`
+								document.write(html)
+							}
+						</script>
+					</table>
+				</td>
+			</tr>
+		</form>
+    </table>
 </center>
-
-
+<center>
+    <table>
+        <form name="tables" dir="rtl">
+            <td>
+                <input onclick='table()' type=button value="לוח חודשי" name=printMonth>
+            </td>
+            <td dir="rtl">
+				<input type="radio" checked name="jewish" value=1>
+				חודש עברי
+				<input type="radio" name="jewish" value=0>
+				חודש לועזי
+            </td>
+            <td>
+                <select class="btn" dir =rtl NAME="zmanimList" onchange="yearTable(this.value);">
+                    <option VALUE="" Selected >לוח זמנים לכל השנה
+                    <script>
+                        for (let i = 0; i < zmanimIDs.length; i++){
+                            tables.zmanimList.add(new Option(lookupTitle(zmanimIDs[i]), zmanimIDs[i]));
+                        }
+                    </script>
+                </select>
+            </td>
+        </form>
+    </table>
+</center>
 </body>
 </html>
