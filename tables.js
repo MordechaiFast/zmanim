@@ -36,7 +36,7 @@ function temporalHour(hour) {
   );
 }
 
-function HoursMinutesSeconds(time, roundUp=false) {
+function HoursMinutesSeconds(time, showSeconds=true, roundUp=false) {
 	const frac = x => x - Math.floor(x);
 	
 	if (isNaN(time))
@@ -78,6 +78,7 @@ function HoursMinutesSeconds(time, roundUp=false) {
 }
 
 function zmanOf(zman){
+	const minutesOnly = false;
 	const roundUp = true;
 	const evening = true;
 	//hite = Math.sqrt(hite) * 0.0348 ;
@@ -85,43 +86,43 @@ function zmanOf(zman){
 	switch (zman) {
 		case "alot":
 			time = twilightAngle(90 + alotDeg, 0);
-			return HoursMinutesSeconds(time, roundUp);
+			return HoursMinutesSeconds(time, showSeconds, roundUp);
 		case "misheyakir":
 			time = twilightAngle(90 + misheyakirDeg, 0);
-			return HoursMinutesSeconds(time, roundUp);
+			return HoursMinutesSeconds(time, showSeconds, roundUp);
 		case "hanetz":
 			time = twilightAngle(90 + (50.0/60.0) + hight, 0);
-			return HoursMinutesSeconds(time, roundUp);
+			return HoursMinutesSeconds(time, minutesOnly, roundUp);
 		case "shema":
 			time = temporalHour(3);
-			return HoursMinutesSeconds(time);
+			return HoursMinutesSeconds(time, showSeconds);
 		case "tefillah":
 			time = temporalHour(4);
-			return HoursMinutesSeconds(time);
+			return HoursMinutesSeconds(time, showSeconds);
 		case "chatzot":
 			time = temporalHour(6);
-			return HoursMinutesSeconds(time);
+			return HoursMinutesSeconds(time, showSeconds);
 		case "minchag":
 			time = temporalHour(6.5);
-			return HoursMinutesSeconds(time, roundUp);
+			return HoursMinutesSeconds(time, showSeconds, roundUp);
 		case "minchak":
 			time = temporalHour(9.5);
-			return HoursMinutesSeconds(time, roundUp);
+			return HoursMinutesSeconds(time, showSeconds, roundUp);
 		case "plag":
 			time = temporalHour(10.75);
-			return HoursMinutesSeconds(time);
+			return HoursMinutesSeconds(time, showSeconds);
 		case "shkia":
 			time = twilightAngle(90 + (50.0/60.0) + hight, evening);
-			return HoursMinutesSeconds(time);
+			return HoursMinutesSeconds(time, minutesOnly);
 		case "tzeit":
 			time = twilightAngle(90 + tzeitDeg, 12);
-			return HoursMinutesSeconds(time, roundUp);
+			return HoursMinutesSeconds(time, showSeconds, roundUp);
 		case "shabbat":
 			sunset = twilightAngle(90 + (50.0/60.0) + hight, evening);
-			return HoursMinutesSeconds(sunset - (nerot/60));
+			return HoursMinutesSeconds(sunset - (nerot/60), minutesOnly);
 		case "motzai shabbat":
 			tzeit = twilightAngle(90 + tzeitDeg, 12);
-			return HoursMinutesSeconds(tzeit + (10/60), roundUp);
+			return HoursMinutesSeconds(tzeit + (10/60), showSeconds, roundUp);
 	}
 }
 
@@ -222,7 +223,7 @@ function calculate(){
 	daily.minchak.value = zmanOf("minchak");
 	daily.plag.value = zmanOf("plag");
 	daily.shkia.value = zmanOf("shkia");
-	const erevMoad = erevMoadim(hDay, hMonth, hYear);
+	const erevMoad = erevMoadim(hDay, hMonth, hYear, diaspora);
 	if (erevMoad == 1) {
 		daily.shabbat.value = zmanOf("shabbat");
 	} else if (erevMoad == 2) {
@@ -325,7 +326,7 @@ function table() {
 	const minchak = zmanOf("minchak");
 	const plag = zmanOf("plag");
 	const shkia = zmanOf("shkia"); 
-	const erevMoad = erevMoadim(hDay, hMonth, hYear);
+	const erevMoad = erevMoadim(hDay, hMonth, hYear, diaspora);
 	let shabbat;
 	if (erevMoad == 1)
 		shabbat = "<B>" + zmanOf("shabbat") + "</B>"
@@ -342,7 +343,7 @@ function table() {
     	? `</B><span class=hebrewBody align=center>${torahReading}</span><B>`
     	: "&nbsp;";
 	
-	let moed = moadim(hDay, hMonth, hYear);
+	let moed = moadim(hDay, hMonth, hYear, diaspora);
 	moed = moed
 		? `</B><span class=hebrewBody align=center>${moed}</span><B>`
 		: "&nbsp;";
@@ -981,7 +982,7 @@ for( ; Date.parse(myDate) < Date.parse(myEndDate); myDate = new Date(Date.parse(
 	
 	
 	
-	var myMoed = moadim(myHebDay, myHebMonth, myHebYear);
+	var myMoed = moadim(myHebDay, myHebMonth, myHebYear, diaspora);
 	
 	
 	if (myMoed == "")
@@ -993,7 +994,7 @@ for( ; Date.parse(myDate) < Date.parse(myEndDate); myDate = new Date(Date.parse(
 		month = myDate.getUTCMonth()+1;
 		year =  myDate.getUTCFullYear();
 		day = myDate.getUTCDate();
-		erevMoadim1 = erevMoadim(myHebDay-1, myHebMonth, myHebYear); 
+		erevMoadim1 = erevMoadim(myHebDay-1, myHebMonth, myHebYear, diaspora); 
 		
 		if (erevMoadim1 != ""){
 			
