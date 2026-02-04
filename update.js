@@ -202,7 +202,7 @@ function erevMoadim(hday, hmonth, hyear, diaspora=false) {
 		if(hday == 29)
 			return 2;
 	} else if(hmonth == 7) {
-		if(hday == 9 || ((hday == 14 || hday == 21) && dow != 7))
+		if(hday == 0 || hday == 9 || ((hday == 14 || hday == 21) && dow != 7))
 			return 2;
 		if(hday == 1 || ((hday == 14 || hday == 21) && dow == 7) || ((hday == 15 || hday == 22) && diaspora))
 			return 3;

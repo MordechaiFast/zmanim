@@ -996,14 +996,14 @@ for( ; Date.parse(myDate) < Date.parse(myEndDate); myDate = new Date(Date.parse(
 		day = myDate.getUTCDate();
 		erevMoadim1 = erevMoadim(myHebDay-1, myHebMonth, myHebYear, diaspora); 
 		
-		if (erevMoadim1 != ""){
+		if (erevMoadim1){
 			
 			
 			shkia = zmanOf("shkia"); 
 
-			if (erevMoadim1 == 1)
+			if (erevMoadim1 == 2)
 				shabbat = "<B>" + zmanOf("shabbat") + "*</B>" ;
-			else if (erevMoadim1 == 2 && myDate.getDay()!= 5){
+			else if (erevMoadim1 == 3 && myDate.getDay()!= 5){
 				tzeit = zmanOf("tzeit");
 				shabbat = "<B>" + zmanOf("motzai shabbat") + "*</B>" ;
 			}
@@ -1017,7 +1017,7 @@ for( ; Date.parse(myDate) < Date.parse(myEndDate); myDate = new Date(Date.parse(
 		year =  myDate.getUTCFullYear();
 		day = myDate.getUTCDate();
 		shkia = zmanOf("shkia");
-		tzeit = zmanOf("tzeit");
+		tzeit = myDate.getDay() == 5 ? "----" : zmanOf("tzeit");
 			
 	}
 	
