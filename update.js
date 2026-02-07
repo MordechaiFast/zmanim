@@ -1,4 +1,5 @@
-function setDate(){
+"use strict";
+function setDate() {
 	const today = new Date();
 	const year = today.getFullYear();
 	const month = today.getMonth() + 1;
@@ -7,12 +8,12 @@ function setDate(){
 	updateFromGregorian();
 }
 
-function setGregorian(year, month, day){
+function setGregorian(year, month, day) {
 	const gregorian = document.querySelector('input[name="gregorian"]');
 	gregorian.value = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 }
 
-function readGregorian(){
+function readGregorian() {
 	const gregorian = document.querySelector('input[name="gregorian"]');
 	const year = Number(gregorian.value.slice(0, 4));
 	const month = Number(gregorian.value.slice(5, 7));
@@ -47,14 +48,14 @@ function updateHebrew() {
 	if (hebrew_leap(hYear)) {
 		const hebMonthName = ["תשרי", "מרחשון", "כסלו", "טבת", "שבט", "אדר א'", "אדר ב'", "ניסן", "אייר", "סיון", "תמוז", "אב", "אלול"];
 	    const hebMonthValue = [7,8,9,10,11,12,13,1,2,3,4,5,6];
-		for (let i = 0; i < hebMonthName.length; i++)
-			hebrew.month.options[i] = new Option(hebMonthName[i], hebMonthValue[i]);
+		for (const n in hebMonthName)
+			hebrew.month.options[n] = new Option(hebMonthName[n], hebMonthValue[n]);
 	} else {
 		const hebMonthName = ["תשרי", "מרחשון", "כסלו", "טבת", "שבט", "אדר", "ניסן", "אייר", "סיון", "תמוז", "אב", "אלול"];
 		const hebMonthValue = [7,8,9,10,11,12,1,2,3,4,5,6];
-		for (var i = 0; i < hebMonthName.length; i ++)
-			hebrew.month.options[i] = new Option(hebMonthName[i], hebMonthValue[i]);
-		hebrew.month.options[12] = null;;
+		for (const n in hebMonthName)
+			hebrew.month.options[n] = new Option(hebMonthName[n], hebMonthValue[n]);
+		hebrew.month.options[12] = null;
 	}
 	// Update Hebrew day list
 	hebrew.day.options[29] =
@@ -105,10 +106,10 @@ function updateFromHebrew() {	// Update Gergoran calendar from Hebrew
 }
 
 
-function checkDST(){
+function checkDST() {
 	const [year, month, day] = readGregorian();
 	const inputs = document.myform1;
-	inputs.dst.checked = DST(year, month, day);
+	inputs.dst.checked = DST(year, month, day, diaspora);
 }
 
 function hebrewNumber(num) {

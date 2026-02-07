@@ -70,7 +70,7 @@
                         <script>
                             const hebMonthName = ["תשרי", "מרחשון", "כסלו", "טבת", "שבט", "אדר א'", "אדר ב'", "ניסן", "אייר", "סיון", "תמוז", "אב", "אלול"];
                             const hebMonthValue = [7,8,9,10,11,12,13,1,2,3,4,5,6];
-                            for (let i = 0; i < hebMonthName.length; i++)
+                            for (const i in hebMonthName)
                                 hebrew.month.options[i] = new Option(hebMonthName[i], hebMonthValue[i]);
                         </script>
                     </SELECT>
@@ -195,20 +195,20 @@
 <BR>
 <center>זמנים של היום</center>
 <center>
-    <table BORDER=0 CELLPADDING=2 dir="rtl">
-		<form name="dailyTable">
+    <form name="dailyTable">
+        <table BORDER=0 CELLPADDING=2 dir="rtl">
 			<tr>
 				<td VALIGN=TOP>
 					<table BORDER=0 >
 						<script>
-							for (let i = 0; i < zmanimIDs.length; i++){
+							for (const i in zmanimIDs) {
 								let html = ""
-								if (i == 4 || i == 8){
+								if (i == 4 || i == 8) {
 									html += "</table></td><td VALIGN=TOP><table BORDER=0 >"
 								}
 								html += `<tr>
-								<td ALIGN=CENTER class=btn1 dir=rtl>${lookupTitle(zmanimIDs[i])}</td>
-								<td ALIGN=CENTER><input type='text' size='9' maxlength='80' readonly name='${zmanimIDs[i]}'></td>
+                                    <td ALIGN=CENTER class=btn1 dir=rtl>${lookupTitle(zmanimIDs[i])}</td>
+                                    <td ALIGN=CENTER><input type='text' size='9' maxlength='80' readonly name='${zmanimIDs[i]}'></td>
 								</tr>`
 								document.write(html)
 							}
@@ -216,8 +216,8 @@
 					</table>
 				</td>
 			</tr>
-		</form>
-    </table>
+        </table>
+    </form>
 </center>
 <center>
     <table>
@@ -235,7 +235,7 @@
                 <select class="btn" dir =rtl NAME="zmanimList" onchange="yearTable(this.value);">
                     <option VALUE="" Selected >לוח זמנים לכל השנה
                     <script>
-                        for (let i = 0; i < zmanimIDs.length; i++){
+                        for (const i in zmanimIDs) {
                             tables.zmanimList.add(new Option(lookupTitle(zmanimIDs[i]), zmanimIDs[i]));
                         }
                     </script>
