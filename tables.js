@@ -1,15 +1,14 @@
 ﻿/*
  JavaScript Temporal Hour Calculator
 */
-
+"use strict";
 
 let month, day, year, hDay, hMonth, hYear, jewish,
-diaspora, nerot, hite, lat, long, timezone, dst, 
+nerot, hite, lat, long, timezone, dst, 
 alotDeg, misheyakirDeg, tzeitDeg, pressure, temp, 
 AMPM, showSeconds, graMga, with_refraction;
-
-var monthName = new Array('January','February','March','April','May','June','July','August','September','October','November','December');
-var shortMonthName = new Array('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec');
+// diaspora, 	Already decalred in cities module.
+var automatic;	//TODO: get rid of this!
 
 function twilightAngle(h, evening=false) {
   const date = {year, month, day};
@@ -32,15 +31,14 @@ function temporalHour(hour) {
   );
 }
 
-function HoursMinutesSeconds(time, showSeconds=true, roundUp=false) {
-	const frac = x => x - Math.floor(x);
-	
+function HoursMinutesSeconds(time, showSeconds=true, roundUp=false) {	
 	if (isNaN(time))
 		return " --:--";
-
-	let h = Math.floor(time);
-	let min = Math.floor(60 * frac(time));
-	let sec = Math.round(60 * frac(60 * frac(time)));
+	
+	const totalSeconds = Math.round(time * 3600);
+	let h = Math.floor(totalSeconds / 3600);
+	let min = Math.floor((totalSeconds % 3600) / 60);
+	let sec = totalSeconds % 60;
 	
 	if (sec == 60) {min += 1; sec = 0;}
 	if (min == 60) {h += 1; min = 0;}
@@ -79,6 +77,7 @@ function zmanOf(zman){
 	const evening = true;
 	//hite = Math.sqrt(hite) * 0.0348 ;
 	let hight = Math.acos(6371009 / (6371009 + hite)) * 180 / Math.PI;
+	let time;
 	switch (zman) {
 		case "alot":
 			time = twilightAngle(90 + alotDeg);
@@ -114,11 +113,11 @@ function zmanOf(zman){
 			time = twilightAngle(90 + tzeitDeg, evening);
 			return HoursMinutesSeconds(time, showSeconds, roundUp);
 		case "shabbat":
-			sunset = twilightAngle(90 + (50.0/60.0) + hight, evening);
-			return HoursMinutesSeconds(sunset - (nerot/60), minutesOnly);
+			time = twilightAngle(90 + (50.0/60.0) + hight, evening);
+			return HoursMinutesSeconds(time - (nerot/60), minutesOnly);
 		case "motzai shabbat":
-			tzeit = twilightAngle(90 + tzeitDeg, evening);
-			return HoursMinutesSeconds(tzeit + (10/60), showSeconds, roundUp);
+			time = twilightAngle(90 + 8.5, evening);
+			return HoursMinutesSeconds(time, showSeconds, roundUp);
 	}
 }
 
@@ -258,6 +257,9 @@ function table() {	//Monthly table
 	getInput();
 
 	if(AMPM == 1) AMPM = 2;
+
+	const monthName = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+	const shortMonthName = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 	
 	const daysOfWeek = jewish
 		? ["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שבת"]
@@ -381,7 +383,7 @@ function table() {	//Monthly table
 
 function writeMonthPage(title, myMonth, timesTable, dIM) {
 	const columns = ["parsha"];
-	columns.push(zmanimIDs);
+	for (const zman of zmanimIDs) columns.push(zman);
 
 	let headerCells = "";
 	for(let j = 0; j < 11; j++) {
@@ -594,100 +596,116 @@ function yearTable(zman) {
 }
 
 
-function writeYearPage(text, strArray, numMonths, numDays) {
-	if (numDays == 31){
-		var monthShortName = new Array('&nbsp;Day&nbsp;','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec');
-    	var dir = "";
-    }
+function writeYearPage(heading, strArray, numMonths, numDays) {
+	const monthShortName = numDays == 31
+		? ['&nbsp;Day&nbsp;','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+		: numMonths == 13
+			? ['&nbsp;Day&nbsp;', "תשרי", "מרחשון", "כסלו", "טבת", "שבט", "'אדר א", "'אדר ב","ניסן", "אייר", "סיון", "תמוז", "אב", "אלול"]
+			: ['&nbsp;Day&nbsp;', "תשרי", "מרחשון", "כסלו", "טבת", "שבט", "אדר", "ניסן", "אייר", "סיון", "תמוז", "אב", "אלול"];
+	const dir = numDays == 31 ? "ltr" : "rtl";
 
-	else{
-    	var dir = "dir='rtl'"
-		if (numMonths == 13) {
-			var monthShortName = new Array('&nbsp;Day&nbsp;', "תשרי", "מרחשון", "כסלו", "טבת", "שבט", "'אדר א", "'אדר ב","ניסן", "אייר", "סיון", "תמוז", "אב", "אלול")
+	let headerCells = ""; 
+	for (let j = 0; j < (numMonths - 1); j++) {
+ 		headerCells += `
+					<TD>
+						<P ALIGN=center>
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					</TD>`;
+	}
+
+	let titleCells = "";
+	for (let j = 0; j < numMonths + 1; j++) {
+		titleCells += `<TD bgcolor= #FFFFEE>
+							<P ALIGN=center dir='ltr'>
+							${monthShortName[j]}
+						</TD>`
+	} 
+
+	let dataRows = "";
+	for (let i = 1; i <= numDays; i++){
+		const rowData = strArray[i];
+		const bgColor = i % 2 == 0 ? " #CCCCCC" : " #FFFFFF";
+		dataRows += `<TR bgcolor=${bgColor}>`;
+		for (let j = 0; j <numMonths+1 ; j++){
+			dataRows += `<TD>
+							<P ALIGN=center dir='ltr'>
+							${rowData[j] ? rowData[j] : "&nbsp;"}
+						</TD>`
 		}
-		else {
-			var monthShortName = new Array('&nbsp;Day&nbsp;', "תשרי", "מרחשון", "כסלו", "טבת", "שבט", "אדר", "ניסן", "אייר", "סיון", "תמוז", "אב", "אלול")
-		} 
-	}
-  
-  var htmlText="";
-  htmlText += "<html><head>"
-  htmlText += "<title>Noam Kaplan's Zmanim Chart</title>"
-  
-  
-  htmlText += "<STYLE TYPE='text/css' media='screen'>P,TR,TD{font-size: 12px;font-family:verdana , arial, helvetica, sans-serif;color: black;}SPAN{font-size: 20px;font-family:Times New Roman,  serif;color: black;}.hebrewTitle {cursor:hand;font-family:david,times new roman,serif;font-weight:normal;font-size:150%;color:#000000;}</STYLE>"  
-  htmlText += "<STYLE TYPE='text/css' media='print'>P,TR,TD{font-size: 10px;font-family:verdana , arial, helvetica, sans-serif;color: black;}SPAN{font-size: 13px;font-family:Times New Roman,  serif;color: black;}.hebrewTitle {cursor:hand;font-family:david,times new roman,serif;font-weight:normal;font-size:120%;color:#000000;}</STYLE>"
-  
-  
- 
-  htmlText += "</head>"
-  htmlText += "<body BGCOLOR=#FFFFFF TEXT=#000000 LINK=#0000FF VLINK=#663399 ALINK=#FF0000>"
-  htmlText += "<div align=\"center\"><center>"
-  htmlText += "<TABLE width=500 border=1 cellpadding=0 cellspacing=0 bordercolor=black " + dir + ">"
- 
-  htmlText += "<TR>"
-  htmlText += "<TD dir='ltr' COLSPAN=" + (numMonths + 1) + ">"
-  htmlText += text
-  htmlText += "</TD>"
-  htmlText += "</TR>"
-
-  htmlText += "<TR>"
- 
-  htmlText += "<TD>"
-  htmlText +="<P ALIGN=center>"
-  htmlText +="&nbsp;&nbsp;&nbsp;&nbsp;";
-  htmlText += "</TD>"
-  
- 
-for( var j = 0; j<(numMonths-1); j++){
-  htmlText += "<TD >"
-  htmlText +="<P ALIGN=center>"
-  htmlText +="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-  htmlText += "</TD>"
-}
-
- htmlText += "<TD>"
- htmlText +="<P ALIGN=center dir='ltr'><FONT COLOR=red size=-15>©&nbsp;N.&nbsp;Kaplan</FONT>"
- htmlText +="&nbsp;";
- htmlText += "</TD>"	
-
-  htmlText += "</TR>"
-
-  htmlText += "<TR>"
- 
- 
- 
-for( var j = 0; j<numMonths+1; j++){	
-  htmlText += "<TD bgcolor=#FFFFEE>"
-  htmlText +="<P ALIGN=center dir='ltr'>"
-  htmlText += monthShortName[j];
-  htmlText += "</TD>"
-} 
-  
-  htmlText += "</TR>"
-
-
-for (var i=1; i<=numDays; i++){
-  strB=strArray[i];
-
-  //htmlText += "<TR>"
-  htmlText += "<TR " + (i % 2 == 0 ? "bgcolor=#CCCCCC" : "") + ">"
-
-	for (var j = 0; j <numMonths+1 ; j++){
-	  //htmlText += "<TD " + (j % 2 == 0 ? "bgcolor=#CCCCCC" : "") + ">"
-	  htmlText += "<TD>"
-	  htmlText +="<P ALIGN=center dir='ltr'>"
-	  htmlText += strB[j] ;
-	  if (strB[j] == "" ){htmlText += "&nbsp;";}
-	  htmlText += "</TD>"
+		dataRows += "</TR>"            
 	}
 
-
-  htmlText +=  "</TR>"            
-}
-
-  htmlText += "</TABLE>"
-  htmlText += "</body></html>"
+  	let htmlText = `
+<html>
+	<head>
+		<meta charset='utf-8'>
+		<title>Noam Kaplan's Zmanim Chart</title>"
+		<STYLE TYPE='text/css' media='screen'>
+			P, TR, TD {
+				font-size: 12px;
+				font-family: verdana, arial, helvetica, sans-serif;
+				color: black;
+			}
+			SPAN {
+				font-size: 20px;
+				font-family: Times New Roman, serif;
+				color: black;
+			}
+			.hebrewTitle {
+				cursor: hand;
+				font-family: david, times new roman, serif;
+				font-weight: normal;
+				font-size: 150%;
+				color: #000000;
+			}
+		</STYLE>  
+		<STYLE TYPE='text/css' media='print'>
+			P, TR, TD {
+				font-size: 10px;
+				font-family: verdana, arial, helvetica, sans-serif;
+				color: black;
+			}
+			SPAN {
+				font-size: 13px;
+				font-family: Times New Roman, serif;
+				color: black;
+			}
+			.hebrewTitle {
+				cursor: hand;
+				font-family: david, times new roman, serif;
+				font-weight: normal;
+				font-size: 120%;
+				color: #000000;
+			}
+		</STYLE>"
+	</head>
+	<body BGCOLOR= #FFFFFF TEXT= #000000 LINK= #0000FF VLINK= #663399 ALINK= #FF0000>
+		<div align="center"><center>
+			<TABLE width=500 border=1 cellpadding=0 cellspacing=0 bordercolor=black ${dir}>
+				<TR>
+					<TD dir='ltr' COLSPAN=${numMonths + 1}>
+						${heading}
+					</TD>
+				</TR>
+				<TR>
+					<TD>
+						<P ALIGN=center>
+						&nbsp;&nbsp;&nbsp;&nbsp;
+					</TD>
+					${headerCells}
+					<TD>
+						<P ALIGN=center dir='ltr'><FONT COLOR=red size=-15>©&nbsp;N.&nbsp;Kaplan</FONT>
+						&nbsp;
+					</TD>
+				</TR>
+				<TR>
+				${titleCells}
+				</TR>
+				${dataRows}
+			</TABLE>
+		</center>
+	</body>
+</html>`
 
    windowWith(htmlText);
 }
@@ -704,7 +722,7 @@ function yearShabbat() {
 	automatic = 0;
 
 	var deg = String.fromCharCode(176);
-
+	
 	getInput();
 
 	var locName = getLocationName();
@@ -753,41 +771,41 @@ function yearShabbat() {
 	  }
  
  	title += "</FONT>"
- 
+	
 	var htmlText="";
-	htmlText += "<html><head>"
+	htmlText += "<html><head><meta charset='utf-8'>"
 	htmlText += "<title>Shabbat Times</title>"
 	htmlText += "<STYLE TYPE='text/css' media='screen'>P,TR,TD{font-size: 12px;font-family:verdana , arial, helvetica, sans-serif;color: black;}SPAN{font-size: 15px;font-family:Times New Roman,  serif;color: black;}.hebrewTitle {cursor:hand;font-family:david,times new roman,serif;font-weight:normal;font-size:150%;color:#000000;}</STYLE>"  
 	htmlText += "<STYLE TYPE='text/css' media='print'>P,TR,TD{font-size: 10px;font-family:verdana , arial, helvetica, sans-serif;color: black;}SPAN{font-size: 13px;font-family:Times New Roman,  serif;color: black;}.hebrewTitle {cursor:hand;font-family:david,times new roman,serif;font-weight:normal;font-size:120%;color:#000000;}</STYLE>"  
 	// htmlText += "<STYLE TYPE='text/css' media='print'> DIV.page {	MARGIN: 10% 0%; WRITING-MODE: tb-rl; HEIGHT: 80% } DIV.page TABLE { FILTER: progid:DXImageTransform.Microsoft.BasicImage(Rotation=1); MARGIN-RIGHT: 50pt }</STYLE>"
 	htmlText += "</head>"
-
+	
 	htmlText += "<body BGCOLOR=#FFFFFF TEXT=#000000 LINK=#0000FF VLINK=#663399 ALINK=#FF0000>"
-
+	
 	htmlText += "<div class=page align='center'><center>"	
 	htmlText += "<TABLE DIR=rtl width=1200 border=0 cellpadding=1 cellspacing=0 bordercolor=Black >"
-
+	
 	htmlText += "<TR>"
 	htmlText += "<TD COLSPAN=7>"
 	htmlText += title 
 	htmlText += "</TD>"
 	htmlText += "</TR>"
-
-
+	
+	
 	htmlText += "<TR>"
 	htmlText += "<TD>"
 	htmlText +="<P ALIGN=right><FONT COLOR=red size=-5>©&nbsp;N.&nbsp;Kaplan&nbsp;&nbsp;</FONT>"
 	htmlText +="&nbsp;";
 	htmlText += "</TD>"	
-
+	
 	htmlText += "<TD>"
 	htmlText +="<P ALIGN=center><FONT COLOR=red size=-5>&nbsp;&nbsp;&nbsp;&nbsp;</FONT>"
 	htmlText +="&nbsp;";
 	htmlText += "</TD>"	
-
-
+	
+	
 	htmlText += "<TR valign=top ><TD>"
- 	  
+	
 	if (AMPM == 1) AMPM=2; 
 	
 	var myDate = new Date(year, 0, 1);
@@ -798,28 +816,28 @@ function yearShabbat() {
 		
 		var j = hebrew_to_jd(hYear - 1, 6, 29);
 		var date1 = jd_to_gregorian(j);
-
+		
 		year = date1[0];
 		month = date1[1];
 		day = date1[2];
-
+		
 		var myDate = new Date(year, month-1, day);
-
+		
 		myDate.setHours(12);
 		
 		j = hebrew_to_jd(hYear + 1, 7, 1);
 		date1 = jd_to_gregorian(j);
-
+		
 		year = date1[0];
 		month = date1[1];
 		day = date1[2];
-
+		
 		var myEndDate = new Date(year, month-1, day);
-
+		
 		myEndDate.setHours(12);
 	}
-		
-		
+	
+	
 
 
 for( ; Date.parse(myDate) < Date.parse(myEndDate); myDate = new Date(Date.parse(myDate) + (86400000))){  
@@ -841,9 +859,7 @@ for( ; Date.parse(myDate) < Date.parse(myEndDate); myDate = new Date(Date.parse(
 
 	
 	myDate.setHours(12);
-	
-	shkia = zmanOf("shkia"); 
-	
+		
 	var erevMoadim1 = ""
 	var myHebDay;
 	
@@ -860,7 +876,7 @@ for( ; Date.parse(myDate) < Date.parse(myEndDate); myDate = new Date(Date.parse(
 
 	
 	
-	
+	let shabbat, tzeit;
 	if (myDate.getDay()== 6 ){
 		myDate = new Date(Date.parse(myDate) - (86400000));
 		month = myDate.getUTCMonth()+1;
@@ -879,7 +895,7 @@ for( ; Date.parse(myDate) < Date.parse(myEndDate); myDate = new Date(Date.parse(
  	
  	
 	
-	tzeit = zmanOf("tzeit"); 
+	tzeit = zmanOf("motzai shabbat"); 
 	
 	
 	
@@ -907,14 +923,10 @@ for( ; Date.parse(myDate) < Date.parse(myEndDate); myDate = new Date(Date.parse(
 		erevMoadim1 = erevMoadim(myHebDay-1, myHebMonth, myHebYear, diaspora); 
 		
 		if (erevMoadim1){
-			
-			
-			shkia = zmanOf("shkia"); 
-
 			if (erevMoadim1 == 2)
 				shabbat = "<B>" + zmanOf("shabbat") + "*</B>" ;
 			else if (erevMoadim1 == 3 && myDate.getDay()!= 5){
-				tzeit = zmanOf("tzeit");
+				tzeit = zmanOf("motzai shabbat");
 				shabbat = "<B>" + zmanOf("motzai shabbat") + "*</B>" ;
 			}
 
@@ -926,8 +938,7 @@ for( ; Date.parse(myDate) < Date.parse(myEndDate); myDate = new Date(Date.parse(
 		month = myDate.getUTCMonth()+1;
 		year =  myDate.getUTCFullYear();
 		day = myDate.getUTCDate();
-		shkia = zmanOf("shkia");
-		tzeit = myDate.getDay() == 5 ? "----" : zmanOf("tzeit");
+		tzeit = myDate.getDay() == 5 ? "----" : zmanOf("motzai shabbat");
 			
 	}
 	
@@ -935,7 +946,7 @@ for( ; Date.parse(myDate) < Date.parse(myEndDate); myDate = new Date(Date.parse(
 		myMoed = torahReading + " " + myMoed;
 	
 	
-	myDay = shortMonthName[myDate.getMonth()] + " " +  myDate.getDate();
+	const myDay = shortMonthName[myDate.getMonth()] + " " +  myDate.getDate();
 
 
 	if (hebrew_leap(myHebYear)) {

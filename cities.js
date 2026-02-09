@@ -1,3 +1,5 @@
+var diaspora;   // Must be global for torahReadings.js
+
 const CITIES_DATA = `
 name|lat|long|tz|elevation|candlelighting|diaspora
 ירושלים|31.766666|-35.233333|2|0|40|0
