@@ -5,7 +5,7 @@
 
 let month, day, year, hDay, hMonth, hYear, jewish,
 nerot, hite, lat, long, timezone, dst, 
-alotDeg, misheyakirDeg, tzeitDeg, pressure, temp, 
+alotDeg, misheyakirDeg, tzeitDeg, shabbatDeg, pressure, temp, 
 AMPM, showSeconds, graMga, with_refraction;
 // diaspora, 	Already decalred in cities module.
 var automatic;	//TODO: get rid of this!
@@ -13,7 +13,7 @@ var automatic;	//TODO: get rid of this!
 function twilightAngle(h, evening=false) {
   const date = {year, month, day};
   const location = {lat, long, timezone, dst};
-  return twilightTime(90-h, evening, date, location)
+  return twilightTime(-h, evening, date, location)
 }
 
 function temporalHour(hour) {
@@ -80,13 +80,13 @@ function zmanOf(zman){
 	let time;
 	switch (zman) {
 		case "alot":
-			time = twilightAngle(90 + alotDeg);
+			time = twilightAngle(alotDeg);
 			return HoursMinutesSeconds(time, showSeconds, roundUp);
 		case "misheyakir":
-			time = twilightAngle(90 + misheyakirDeg);
+			time = twilightAngle(misheyakirDeg);
 			return HoursMinutesSeconds(time, showSeconds, roundUp);
 		case "hanetz":
-			time = twilightAngle(90 + (50.0/60.0) + hight);
+			time = twilightAngle(50/60 + hight);
 			return HoursMinutesSeconds(time, minutesOnly, roundUp);
 		case "shema":
 			time = temporalHour(3);
@@ -107,16 +107,16 @@ function zmanOf(zman){
 			time = temporalHour(10.75);
 			return HoursMinutesSeconds(time, showSeconds);
 		case "shkia":
-			time = twilightAngle(90 + (50.0/60.0) + hight, evening);
+			time = twilightAngle(50/60 + hight, evening);
 			return HoursMinutesSeconds(time, minutesOnly);
 		case "tzeit":
-			time = twilightAngle(90 + tzeitDeg, evening);
+			time = twilightAngle(tzeitDeg, evening);
 			return HoursMinutesSeconds(time, showSeconds, roundUp);
 		case "shabbat":
-			time = twilightAngle(90 + (50.0/60.0) + hight, evening);
+			time = twilightAngle(50/60 + hight, evening);
 			return HoursMinutesSeconds(time - (nerot/60), minutesOnly);
 		case "motzai shabbat":
-			time = twilightAngle(90 + 8.5, evening);
+			time = twilightAngle(shabbatDeg, evening);
 			return HoursMinutesSeconds(time, showSeconds, roundUp);
 	}
 }
@@ -194,6 +194,7 @@ function getInput(){
 	alotDeg = Number(inputs.alotDeg.value);
 	misheyakirDeg = Number(inputs.misheyakirDeg.value);
 	tzeitDeg = Number(inputs.tzeitDeg.value);
+	shabbatDeg = Number(inputs.shabbatDeg.value);
 	graMga = inputs.GRA_MGA.value;
 	
 	if (diaspora != 2) {
@@ -205,7 +206,7 @@ function getInput(){
 }
 
 
-function calculate(){
+function calculate() {  //Daily table
 	getInput();
 	const daily = document.dailyTable;
 	daily.alot.value = zmanOf("alot");
@@ -742,7 +743,7 @@ function yearShabbat() {
 	}
 	//offsetStr = offset - 1;
 	}
-
+	var ns, ew;
 	if (lat>=0) ns=" N"; else ns=" S";
 	if (long>=0) ew=" W"; else ew=" E";
 
@@ -945,7 +946,7 @@ for( ; Date.parse(myDate) < Date.parse(myEndDate); myDate = new Date(Date.parse(
 	if (torahReading != "&nbsp;")
 		myMoed = torahReading + " " + myMoed;
 	
-	
+	const shortMonthName = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 	const myDay = shortMonthName[myDate.getMonth()] + " " +  myDate.getDate();
 
 
@@ -960,7 +961,7 @@ for( ; Date.parse(myDate) < Date.parse(myEndDate); myDate = new Date(Date.parse(
 	var whatDay1 =  "<span class=hebrewBody align=center>" + hebDayNumber[myHebDay] + "&nbsp;" + hebMonth[myHebMonth-1] + "</span>";
 
 	 //strB = new Array(tzeit,shkia ,shabbat, myMoed,myDay,whatDay1);
-	 strB = new Array(tzeit, shabbat, myMoed,myDay,whatDay1);
+	var strB = new Array(tzeit, shabbat, myMoed,myDay,whatDay1);
  
  
 	if (myDate.getDay()== 6){strB = strB.concat(6);}

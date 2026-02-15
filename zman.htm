@@ -9,40 +9,53 @@
 <script SRC="hebrew.js"></script>
 <script SRC="torahReading.js"></script>
 <STYLE TYPE="text/css">
-    TR{
+    TR {
     font-size: 12px;
     font-family:verdana , arial, helvetica, sans-serif;
     color: black;
     }
     .regular {
-    font-family:Times New Roman, verdana , arial, helvetica, sans-serif;
+    font-family: Times New Roman, verdana, arial, helvetica, sans-serif;
     color: black;
     }
-
-    SPAN{
+    SPAN {
     font-size: 15px;
-    font-family:David,Times New Roman,  serif;
+    font-family: David, Times New Roman, serif;
     color: black;
     }
-
-    P{
+    P {
     font-size: big;
-    font-family:verdana , arial, helvetica, sans-serif;
+    font-family: verdana , arial, helvetica, sans-serif;
     color: red;
-    font-weight:bold
+    font-weight:bold;
     }
-
-    .smallOne
-    {
-    font-size: 10px;
-    font-family:verdana , arial, helvetica, sans-serif;
-    color: black;
+    .smallOne {
+        font-size: 10px;
+        font-family: verdana , arial, helvetica, sans-serif;
+        color: black;
     }
-
-    .btn {cursor:hand;font-family:david,times new roman,serif;font-weight:normal;font-size:100%;color:#000000;background-color:#FFFFEE}
-    .btn1 {cursor:hand;font-family:david,times new roman,serif;font-weight:normal;font-size:19px;color:#000000}
-
-    .ctr {cursor:hand;font-family:arial,times new roman,serif;font-weight:normal;font-size:12px;color:#000000}
+    .btn {
+        cursor: hand;
+        font-family: david, times new roman, serif;
+        font-weight: normal;
+        font-size: 100%;
+        color: #000000;
+        background-color: #FFFFEE;
+    }
+    .btn1 {
+        cursor: hand;
+        font-family: david, times new roman, serif;
+        font-weight: normal;
+        font-size: 19px;
+        color: #000000;
+    }
+    .ctr {
+        cursor: hand;
+        font-family: arial, times new roman, serif;
+        font-weight: normal;
+        font-size: 12px;
+        color: #000000;
+    }
 </STYLE>
 </head>
 <body bgcolor="#EFEFCE" background="parchmnt.jpg" onload="initTorahReadings();setDate();loadCities();getLocation();checkDST();calculate();">
@@ -50,7 +63,7 @@
     <p>שעות זמניות לפי מקום השמש</p>
 </center>
 <center>
-    <table WIDTH="100%" >
+    <table WIDTH="max-width 800px" >
         <tr>
             <td>
                 <center>
@@ -69,7 +82,7 @@
                     <SELECT class="ctr" dir =rtl name=month  onChange="updateFromHebrew();updateHebrew();updateHebrewDescription();checkDST();calculate();" >
                         <script>
                             const hebMonthName = ["תשרי", "מרחשון", "כסלו", "טבת", "שבט", "אדר א'", "אדר ב'", "ניסן", "אייר", "סיון", "תמוז", "אב", "אלול"];
-                            const hebMonthValue = [7,8,9,10,11,12,13,1,2,3,4,5,6];
+                            const hebMonthValue = [7, 8, 9, 10, 11, 12, 13, 1, 2, 3, 4, 5, 6];
                             for (const i in hebMonthName)
                                 hebrew.month.options[i] = new Option(hebMonthName[i], hebMonthValue[i]);
                         </script>
@@ -88,7 +101,7 @@
     </table>
 </center>
 <center>
-    <table BORDER CELLPADDING=3 WIDTH="100%" dir="rtl">
+    <table BORDER CELLPADDING=3 WIDTH="max-width=800px" dir="rtl">
 	    <form ACTION="" METHOD=POST name=myform1>
             <tr>
                 <td>
@@ -102,11 +115,11 @@
                     הדלקת נרות &nbsp;
                     <input name="nerot" value="18" size=1 type="text" onchange="calculate()">
                     &nbsp;דקות לפני שקיעה&nbsp;&nbsp;&nbsp;
-                    גובה&nbsp;
+                    <br>גובה&nbsp;
                     <input name="hite" value="0" size=1 type="text" onchange="calculate()">
                     &nbsp;מטרים מעל פני הים
                 </td>
-                <td width=27%>
+                <td>
                     קו רוחב&nbsp;
                     <input name="latitude" value="31.778533" size="6" type="text" onchange="setUserInput();calculate();">&deg;&nbsp;
                     <input type="radio" name="NorthSouth" value="N" checked onchange="setUserInput();calculate();">
@@ -120,7 +133,7 @@
                     <INPUT type="radio" name="EastWest" value="W" onclick="setUserInput();calculate();">
                     מערב&nbsp;
                 </td>
-                <td width=30%>
+                <td>
                     <center>
                         אזור זמן:
                         <select name="timezone" onchange="setUserInput();calculate()">
@@ -162,10 +175,11 @@
                 <td>
                     זמני לילה:<br>
                     עלות השחר<input name="alotDeg" value="19.75" size="2" type="text" onchange="calculate()">&nbsp;&deg;&nbsp;&nbsp;
-                    משיכיר<input name="misheyakirDeg" value="11.5" size="1" type="text" onchange="calculate()">&nbsp;&deg;&nbsp;&nbsp;
-                    צאת הכוכבים<input name="tzeitDeg" value="4.61" size="1" type="text" onchange="calculate()">&nbsp;&deg;
+                    משיכיר<input name="misheyakirDeg" value="11.5" size="2" type="text" onchange="calculate()">&nbsp;&deg;&nbsp;&nbsp;
+                    <br>צאת הכוכבים<input name="tzeitDeg" value="4.61" size="1" type="text" onchange="calculate()">&nbsp;&deg;&nbsp;
+                    צאת שבת<input name="shabbatDeg" value="8.5" size="1" type="text" onchange="calculate()">&nbsp;&deg;&nbsp;&nbsp;
                 </td>
-                <td width=27%>
+                <td>
                     לחץ אויר&nbsp;<input name="pressure" value="1010" size="2" type="text" onchange="calculate()">&nbsp;millibars&nbsp;
                     <br>
                     טמפרטורה&nbsp;<input name="temp" value="10" size="1" type="text" onchange="calculate()">&nbsp;&deg;C
