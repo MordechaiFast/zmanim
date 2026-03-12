@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>DST Finder</title>
+<!--
+Source - https://stackoverflow.com/a/60106486
+Posted by Altair7852, modified by community. See post 'Timeline' for change history
+Retrieved 2026-02-11, License - CC BY-SA 4.0
+-->
+
+<script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+<script>eruda.init();</script>
+
+<style>
+  body {
+    font-family: sans-serif;
+    max-width: 700px;
+    margin: 2em auto;
+  }
+  select {
+    width: 100%;
+    padding: 0.4em;
+    font-size: 1em;
+  }
+  .result {
+    margin-top: 1em;
+    padding: 0.8em;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+</style>
+</head>
+<body>
+
+<h2>Daylight Saving Time Finder</h2>
+
+<label>
+  Time zone:
+  <select id="tz"></select>
+</label>
+
+<div class="result" id="output"></div>
+
+<script>
+const select = document.getElementById("tz");
+const output = document.getElementById("output");
+const year = new Date().getFullYear();
+
+// Helper: get offset in minutes
+function getOffsetMinutes(timeZone, date) {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone,
+    timeZoneName: "shortOffset",
+    hour: "2-digit"
+  }).formatToParts(date);
+
+  const tz = parts.find(p => p.type === "timeZoneName").value;
+  const m = tz.match(/GMT([+-]\d+)(?::(\d+))?/);
+  if (!m) return 0;
+
+  const h = parseInt(m[1], 10);
+  const min = m[2] ? parseInt(m[2], 10) : 0;
+  return h * 60 + Math.sign(h) * min;
+}
+
+// ---- STANDARD OFFSET (non-DST offset) ----
+function getStandardOffset(timeZone, year) {
+  const jan = new Date(Date.UTC(year, 0, 1));
+  const jul = new Date(Date.UTC(year, 6, 1));
+  return Math.min(
+    getOffsetMinutes(timeZone, jan),
+    getOffsetMinutes(timeZone, jul)
+  );
+}
+
+// ---- FORMAT OFFSET ----
+function formatOffset(minutes) {
+  const sign = minutes >= 0 ? "+" : "-";
+  const abs = Math.abs(minutes);
+  const h = String(Math.floor(abs / 60)).padStart(2, "0");
+  const m = String(abs % 60).padStart(2, "0");
+  return `${sign}${h}:${m}`;
+}
+
+// Find DST transitions for a year
+function findDST(timeZone, year) {
+  let prevOffset = null;
+  const changes = [];
+
+  for (let month = 0; month < 12; month++) {
+    for (let day = 1; day <= 31; day++) {
+      const d = new Date(Date.UTC(year, month, day));
+      if (d.getUTCMonth() !== month) continue;
+
+      const offset = getOffsetMinutes(timeZone, d);
+      if (prevOffset !== null && offset !== prevOffset) {
+        changes.push({ date: new Date(d), from: prevOffset, to: offset });
+      }
+      prevOffset = offset;
+    }
+  }
+  return changes;
+}
+
+function getTimezoneName(timeZone, date) {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone,
+    timeZoneName: "shortOffset",
+    hour: "2-digit"
+  }).formatToParts(date);
+
+  return parts.find(p => p.type === "timeZoneName").value;
+}
+
+function isDST(timeZone, date) {
+  const year = date.getUTCFullYear();
+  const offsetNow = getOffsetMinutes(timeZone, date);
+  const standardOffset = getStandardOffset(timeZone, year);
+  return offsetNow !== standardOffset;
+}
+
+// ---- UPDATE DISPLAY ----
+function update() {
+  const tz = select.value;
+  const changes = findDST(tz, year);
+  const today = new Date();
+  const tzName = getTimezoneName(tz, today);
+
+  let html = `<strong>${tz} — ${year}</strong><br>${tzName}<br>`;
+  if (changes.length === 0) {
+    html += `${tz} does not observe DST in ${year}.`;
+  } else {
+    for (const c of changes) {
+      const type = c.to > c.from ? "DST begins" : "DST ends";
+      html += `${type}: ${c.date.toISOString().slice(0, 10)}<br>`;
+    }
+  }
+  html += `<br>Today, ${today.toISOString().slice(0, 10)},
+    is ${isDST(tz, today) ? "" : "not "}DST.`
+  output.innerHTML = html;
+}
+
+
+// ---- GROUP TIMEZONES BY STANDARD OFFSET ----
+const zones = Intl.supportedValuesOf("timeZone");
+const groups = {};
+
+for (const tz of zones) {
+  const offset = getStandardOffset(tz, year);
+  if (!groups[offset]) groups[offset] = [];
+  groups[offset].push(tz);
+}
+
+// Sort offsets numerically
+const sortedOffsets = Object.keys(groups)
+  .map(Number)
+  .sort((a, b) => a - b);
+
+// Build select with optgroups
+for (const offset of sortedOffsets) {
+  const group = document.createElement("optgroup");
+  group.label = formatOffset(offset);
+
+  const standardOpt = document.createElement("option");
+  standardOpt.value = group.label;
+  standardOpt.textContent = group.label;
+  group.appendChild(standardOpt);
+
+  groups[offset].sort().forEach(tz => {
+    const opt = document.createElement("option");
+    opt.value = tz;
+    opt.textContent = tz;
+    group.appendChild(opt);
+  });
+
+  select.appendChild(group);
+}
+
+// Default selection to user's zone
+select.value = Intl.DateTimeFormat().resolvedOptions().timeZone;
+update();
+
+select.addEventListener("change", update);
+</script>
+
+</body>
+</html>
